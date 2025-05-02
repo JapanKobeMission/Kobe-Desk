@@ -115,9 +115,10 @@ class EditPeopleView extends PaginatedView {
                 elementClass: 'edit-view-person-assignment',
                 text: person.assignment
             });
-
+            
+            console.log(person)
             const area = this.database.getPersonArea(person.name);
-
+            console.log(area);
             new Element('DIV', row, {
                 elementClass: 'edit-view-person-area',
                 text: area.name

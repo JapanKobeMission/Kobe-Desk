@@ -61,22 +61,24 @@ class Database {
             if (row['Area']) {
                 if (row['Area'] in this.areas) {
                     this.areas[row['Area']].addPerson(
-                        row['Missionary']
+                        row['Missionary'].trim()
                     );
                 } else {
                     const area = new Area(
                         row['Area'],
                         row['District'],
                         row['Zone'],
-                        [row['Missionary']]
+                        [row['Missionary'].trim()]
                     );
                     this.addArea(area);
                 }
             }
 
             if (row['Missionary']) {
+                console.log('Import Raw Name:', row['Missionary'].name);
+                console.log('Import Sanitized Name:', row['Missionary'].trim());
                 const person = new Person(
-                    row['Missionary'],
+                    row['Missionary'].trim(),
                     row['ID'],
                     row['Type'],
                     row['Position Abbr'],
@@ -238,7 +240,7 @@ class Database {
                         area.name,
                         area.district,
                         area.zone,
-                        area.people
+                        area.people.map(person => person.trim())
                     )
                 );
             }
@@ -246,7 +248,7 @@ class Database {
             for (const person of Object.values(people)) {
                 this.addPerson(
                     new Person(
-                        person.name,
+                        person.name.trim(),
                         person.ID,
                         person.type,
                         person.assignment,
@@ -400,7 +402,7 @@ class Area {
     }
 
     addPerson(name) {
-        this.people.push(name);
+        this.people.push(name.trim());
     }
 }
 

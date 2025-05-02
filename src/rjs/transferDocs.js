@@ -51,6 +51,9 @@ for (const number of Object.values(database.numbers)) {
 phoneIndex = sortObject(phoneIndex);
 
 for (const group in phoneIndex) {
+    if (group === "Extra") {
+        continue;
+    }
     const table = new Element('TABLE', phoneListSection, {
         elementClass: 'phone-table'
     });
@@ -68,6 +71,9 @@ for (const group in phoneIndex) {
     });
 
     for (const number of phoneIndex[group]) {
+        if (group === "Extra") {
+            continue;
+        }
         const row = new Element('TR', table, {
             elementClass: 'phone-table-row'
         });
@@ -324,11 +330,13 @@ for (const team of Object.values(database.teams)) {
     for (const personName of team.people) {
         new Element('LI', list, {
             elementClass: [
-                'team-list-element',
-                `team-list-element-${team.roles[personName]}`
+            'team-list-element',
+            `team-list-element-${team.roles[personName]}`
             ],
             text: database.people[personName].type + ' ' + personName
         });
+
+        
     }
 }
 
