@@ -116,9 +116,7 @@ class EditPeopleView extends PaginatedView {
                 text: person.assignment
             });
             
-            console.log(person)
             const area = this.database.getPersonArea(person.name);
-            console.log(area);
             new Element('DIV', row, {
                 elementClass: 'edit-view-person-area',
                 text: area.name
@@ -748,7 +746,7 @@ class EditNumbersView extends PaginatedView {
                         this.database,
                         this.navigator,
                         this,
-                        number.name,
+                        number.displayName,
                         { number }
                     );
 
@@ -758,7 +756,7 @@ class EditNumbersView extends PaginatedView {
 
             new Element('DIV', row, {
                 elementClass: 'edit-view-number-display-name',
-                text: number.displayName || number.name
+                text: number.displayName ?? number.name
             });
 
             const detailsWrapper = new Element('DIV', row, {

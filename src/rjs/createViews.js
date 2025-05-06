@@ -114,7 +114,7 @@ function encodeQuotedPrintable(input) {
     return output;
 }
 
-function generateCard(name, reading, number, missionaries, photo, note, zone) {
+function generateCard(name, reading, number, missionaries, photo, note, zone, group) {
     const template = `
 BEGIN:VCARD
 VERSION:2.1
@@ -130,7 +130,7 @@ ORG:
 TITLE:${missionaries}
 PHOTO;ENCODING=BASE64;PNG:${photo}
 NOTE;ENCODING=QUOTED-PRINTABLE:${note}
-X-GN:JKM Contacts
+X-GN:${group}
 X-CLASS:PUBLIC
 X-REDUCTION:
 X-NO:
@@ -273,7 +273,8 @@ class CreateContactsView extends View {
                             missionaries,
                             photo.replace('data:image/png;base64,', '').replace(/^"|"$/g, ''),
                             encodedNote,
-                            number.group
+                            number.group,
+                            number.number.length === 3 ? 'Emergency Contacts' : 'JKM Contacts'
                         );
 
                         vcfOutput.push(card.replace(/^\s{4}/gm, '').trim());
