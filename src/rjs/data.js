@@ -27,7 +27,7 @@ class Database {
         if (number in this.numbers) {
             this.numbers[number].name = area;
             this.numbers[number].group = group;
-            this.numbers[number].displayName = displayName || area;
+            this.numbers[number].displayName = displayName ?? area;
         } else {
             this.numbers[number] = new PhoneNumber(
                 number,
@@ -432,6 +432,10 @@ class PhoneNumber {
 
     static normalize(number) {
         const plain = number.replace(/\D/g, '');
+
+        if (plain.length <= 3) {
+            return number;
+        }
 
         return `+${plain.slice(0, 2)} ${plain.slice(2, 5)}-${plain.slice(5, 9)}-${plain.slice(9)}`;
     }
