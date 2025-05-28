@@ -80,7 +80,7 @@ for (const group in phoneIndex) {
 
         new Element('TD', row, {
             elementClass: 'phone-table-row-name',
-            text: number.name
+            text: number.displayName ?? number.name
         });
 
         new Element('TD', row, {

@@ -689,7 +689,7 @@ class EditAddressesAddView extends DetailsView {
     }
 }
 
-class EditNumbersView extends PaginatedView {
+class EditContactsView extends PaginatedView {
     get name() { return 'Contacts'; }
 
     getCount() {
@@ -742,7 +742,7 @@ class EditNumbersView extends PaginatedView {
             const row = new Element('DIV', table, {
                 elementClass: 'edit-view-number-row',
                 eventListener: ['click', () => {
-                    const view = new EditNumbersDetailsView(
+                    const view = new EditContactsDetailsView(
                         this.database,
                         this.navigator,
                         this,
@@ -814,7 +814,7 @@ class EditNumbersView extends PaginatedView {
             elementClass: 'edit-details-add-button',
             text: 'add',
             eventListener: ['click', () => {
-                const view = new EditNumbersAddView(
+                const view = new EditContactsAddView(
                     this.database,
                     this.navigator,
                     this,
@@ -831,7 +831,7 @@ class EditNumbersView extends PaginatedView {
     }
 }
 
-class EditNumbersDetailsView extends DetailsView {
+class EditContactsDetailsView extends DetailsView {
     build() {
         const number = this.number;
 
@@ -898,7 +898,7 @@ class EditNumbersDetailsView extends DetailsView {
     }
 }
 
-class EditNumbersAddView extends DetailsView {
+class EditContactsAddView extends DetailsView {
     build() {
         const header = new Element('H1', null, {
             elementClass: 'view-header',

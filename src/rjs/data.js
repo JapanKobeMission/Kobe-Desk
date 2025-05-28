@@ -27,7 +27,7 @@ class Database {
         if (number in this.numbers) {
             this.numbers[number].name = area;
             this.numbers[number].group = group;
-            this.numbers[number].displayName = displayName ?? area;
+            this.numbers[number].displayName = displayName ?? this.numbers[number].displayName;
         } else {
             this.numbers[number] = new PhoneNumber(
                 number,
@@ -75,8 +75,6 @@ class Database {
             }
 
             if (row['Missionary']) {
-                console.log('Import Raw Name:', row['Missionary'].name);
-                console.log('Import Sanitized Name:', row['Missionary'].trim());
                 const person = new Person(
                     row['Missionary'].trim(),
                     row['ID'],
