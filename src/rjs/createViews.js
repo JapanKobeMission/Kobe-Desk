@@ -292,3 +292,76 @@ class CreateContactsView extends View {
         this.addElement(button);
     }
 }
+
+class CreateGraphsView extends View {
+    get name() { return 'Graphs'; }
+
+    build() {
+        const header = new Element('H1', null, {
+            elementClass: 'view-header',
+            text: 'Generate Graphs'
+        });
+
+        this.addElement(header);
+
+        const comment = new Element('DIV', null, {
+            elementClass: 'view-comment',
+            text: 'Use this to generate various graphs to be used in MLC, DLC, and for looking at various metrics.'
+        });
+
+        this.addElement(comment);
+
+        const fileGallery = new Element('DIV', null, {
+            elementClass: 'view-double-gallery'
+        });
+
+        const keyIndicatorFile = new Element('DIV', fileGallery, {
+            elementClass: 'view-gallery-entry'
+        });
+
+        new Element('H2', galleryEntryKI, {
+            elementClass: 'view-gallery-header',
+            text: 'Key Indicator File'
+        });
+
+        new Element('IMG', galleryEntryKI, {
+            elementClass: 'view-gallery-picture',
+            attributes: {
+                'SRC': './assets/images/KITableau.png'
+            }
+        });
+
+        new Element('BUTTON', galleryEntryKI, {
+            elementClass: 'view-gallery-button',
+            text: 'Upload',
+            eventListener: ['click', () => {
+                const filePath = dialog.showOpenDialogSync({
+                    properties: ['openFile'],
+                    filters: [
+                        { name: 'KI File', extensions: ['csv', 'xlsx'] }
+                    ]
+                });
+
+                if (filePath) {
+                    this.database.importKeyIndicatorFile(filePath[0]);
+                }
+            }]
+        });
+
+
+
+        this.addElement(faceGallery);
+
+        const button = new Element('BUTTON', null, {
+            elementClass: 'view-button',
+            text: 'Generate',
+            eventListener: ['click', () => {
+                // put something here
+            }]
+        });
+
+        this.addElement(button);
+    }
+}
+
+    
