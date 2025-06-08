@@ -203,6 +203,14 @@ img.view-gallery-picture {
     margin-bottom: 1.1em;
 }
 
+.view-gallery-subheader {
+    font-size: 12pt;
+    font-family: 'Roboto';
+    color: #8f8f8f;
+    font-weight: 100;
+    margin-bottom: 1.1em;
+}
+
 button.view-gallery-button {
     margin: 10px;
     min-height: 35px;

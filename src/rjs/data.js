@@ -7,7 +7,6 @@ class Database {
         this.numbers = {};
         this.addresses = {};
         this.teams = {};
-        this.files = {};
     }
 
     addArea(area) {
@@ -217,20 +216,13 @@ class Database {
         return contactFace;
     }
 
-    importKeyIndicatorFile(filePath) {
-        this.files['key-indicator'] = filePath;
-    }
-
-    
-
     saveData() {
         ipcRenderer.sendSync('save-data', [
             this.areas,
             this.people,
             this.numbers,
             this.addresses,
-            this.teams,
-            this.files
+            this.teams
         ]);
     }
 
@@ -297,7 +289,7 @@ class Database {
                         team.roles
                     )
                 );
-            }
+            } 
         }
     }
 

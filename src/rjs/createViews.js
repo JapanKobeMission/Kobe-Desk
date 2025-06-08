@@ -1,3 +1,5 @@
+const { spawn } = require('child_process');
+
 class CreateTransferDocsView extends View {
     get name() { return 'Transfer Docs'; }
 
@@ -306,7 +308,7 @@ class CreateGraphsView extends View {
 
         const comment = new Element('DIV', null, {
             elementClass: 'view-comment',
-            text: 'Use this to generate various graphs to be used in MLC, DLC, and for looking at various metrics.'
+            text: 'Use this to generate various graphs to be used in MLC, DLC, and for looking at various metrics.<br><br>In order to download these files:<br>1. Access Tableau at this link: https://missionaryreports.churchofjesuschrist.org/#/site/Missionary/home. If you do not have access, make sure to talk to President Sano!<br>2. Choose the view you want to download data from (Key Indicator Performance or Mission Finding Comparison)<br><br>For Key Indicator Performance:<br>1. Select "Japan Kobe" in the "Mission Name" dropdown<br>2. Ensure the date range is from 1/1/2024 (it will probably default to 1/1/2025) to the current date, or later <br>3. Click the download button in the top right corner and choose the "Crosstab" option<br>4. Ensure the "Missionary KI Table" is the sheet selected, then choose either format of file<br>5. Press Download<br><br>For Mission Finding Comparison:<br>1. Change "Start Date" to 1/1/2001 (some people baptized were found many years ago)<br>2. Ensure "End Date" is the current date, or later<br>3. Click the download button in the top right corner and choose the "Crosstab" option<br>4. Ensure the "Detail" is the sheet selected, then choose either format of file<br>5. Press Download<br><br>You will have to upload these files each time you want to generate new graphs. They will not save. This is to make sure you are using the most up-to-date data from Tableau.'
         });
 
         this.addElement(comment);
@@ -315,7 +317,7 @@ class CreateGraphsView extends View {
             elementClass: 'view-double-gallery'
         });
 
-        const keyIndicatorFile = new Element('DIV', fileGallery, {
+        const galleryEntryKI = new Element('DIV', fileGallery, {
             elementClass: 'view-gallery-entry'
         });
 
@@ -327,9 +329,17 @@ class CreateGraphsView extends View {
         new Element('IMG', galleryEntryKI, {
             elementClass: 'view-gallery-picture',
             attributes: {
-                'SRC': './assets/images/KITableau.png'
+                'SRC': path.join(__dirname, '..', 'assets', 'KITableau.png'),
+                'height': '175px',
             }
         });
+
+        const subheaderKI = new Element('H3', galleryEntryKI, {
+            elementClass: 'view-gallery-subheader',
+            text: 'No file uploaded yet.'
+        });
+        
+        let keyIndicatorFilePath = null;
 
         new Element('BUTTON', galleryEntryKI, {
             elementClass: 'view-gallery-button',
@@ -337,26 +347,138 @@ class CreateGraphsView extends View {
             eventListener: ['click', () => {
                 const filePath = dialog.showOpenDialogSync({
                     properties: ['openFile'],
+                    defaultPath: path.join(__dirname, '..', 'input'),
                     filters: [
                         { name: 'KI File', extensions: ['csv', 'xlsx'] }
                     ]
                 });
-
                 if (filePath) {
-                    this.database.importKeyIndicatorFile(filePath[0]);
+                    keyIndicatorFilePath = filePath[0];
+                    subheaderKI.element.textContent = 'Uploaded: ' + keyIndicatorFilePath;
                 }
             }]
         });
 
+        const galleryEntryFD = new Element('DIV', fileGallery, {
+            elementClass: 'view-gallery-entry'
+        });
 
+        new Element('H2', galleryEntryFD, {
+            elementClass: 'view-gallery-header',
+            text: 'Finding Detail File'
+        });
 
-        this.addElement(faceGallery);
+        new Element('IMG', galleryEntryFD, {
+            elementClass: 'view-gallery-picture',
+            attributes: {
+                'SRC': path.join(__dirname, '..', 'assets', 'FDTableau.png'),
+                'height': '175px',
+            }
+        });
+
+        const subheaderFD = new Element('H3', galleryEntryFD, {
+            elementClass: 'view-gallery-subheader',
+            text: 'No file uploaded yet.'
+        });
+
+        let findingDetailFilePath = null;
+
+        new Element('BUTTON', galleryEntryFD, {
+            elementClass: 'view-gallery-button',
+            text: 'Upload',
+            eventListener: ['click', () => {
+                const filePath = dialog.showOpenDialogSync({
+                    properties: ['openFile'],
+                    defaultPath: path.join(__dirname, '..', 'input'),
+                    filters: [
+                        { name: 'FD File', extensions: ['csv', 'xlsx'] }
+                    ]
+                });
+
+                if (filePath) {
+                    findingDetailFilePath = filePath[0];
+                    subheaderFD.element.textContent = 'Uploaded: ' + findingDetailFilePath;
+                }
+            }]
+        });
+
+        this.addElement(fileGallery);
+
+        const comment2 = new Element('DIV', null, {
+            elementClass: 'view-comment',
+            text: 'Once you have uploaded both files, you can generate the graphs. This will run a Python script that processes the data and generates the graphs. All graphs generate in both English and Japanese. A new window will open and allow you to choose where to save the generated graphs.<br><br>Currently generated graphs are:<br>Baptism count by year<br>Baptism count by year with end-of-year predictions<br>Finding count by year<br>'
+        });
+        
+        this.addElement(comment2);
 
         const button = new Element('BUTTON', null, {
             elementClass: 'view-button',
             text: 'Generate',
             eventListener: ['click', () => {
-                // put something here
+                if (!keyIndicatorFilePath || !findingDetailFilePath) {
+                    showMessage('Please upload both the Key Indicator and Finding Detail files.');
+                    return;
+                }
+
+                const outputPath = dialog.showOpenDialogSync({
+                    title: 'Select Output Directory',
+                    defaultPath: path.join(__dirname, '..', 'output'),
+                    properties: ['openDirectory']
+                });
+                // Run Python scripts to generate graphs
+
+                if (!outputPath || outputPath.length === 0) {
+                    showMessage('Please select an output directory.');
+                    return;
+                }
+
+                // Step 1: Ensure Python dependencies are installed
+                const requirementsPath = path.join(__dirname, '..', 'py', 'requirements.txt');
+                const installProcess = spawn('python', ['-m', 'pip', 'install', '-r', requirementsPath]);
+
+                installProcess.stdout.on('data', (data) => {
+                    console.log(`pip stdout: ${data}`);
+                });
+
+                installProcess.stderr.on('data', (data) => {
+                    console.error(`pip stderr: ${data}`);
+                });
+
+                installProcess.on('close', (installCode) => {
+                    if (installCode !== 0) {
+                        showMessage('Failed to install Python dependencies. See console for details.');
+                        return;
+                    }
+
+                    // Step 2: Run the main Python scripts
+                    for (const file of fs.readdirSync(path.join(__dirname, '..', 'py'))) {
+                        if (file.endsWith('.py')) {
+                            console.log(`Running Python script: ${file}`);
+                            let pythonProcess = spawn('python', [
+                                path.join(__dirname, '..', 'py', file),
+                                keyIndicatorFilePath,
+                                findingDetailFilePath,
+                                outputPath[0]
+                            ]);
+
+                            pythonProcess.stdout.on('data', (data) => {
+                                console.log(`Python stdout: ${data}`);
+                            });
+
+                            pythonProcess.stderr.on('data', (data) => {
+                                console.error(`Python stderr: ${data}`);
+                            });
+
+                            pythonProcess.on('close', (code) => {
+                                if (code === 0) {
+                                    showMessage(`${file} graphs generated successfully.`);
+                                } else {
+                                    showMessage(`Error generating ${file} graphs. See console for details.`);
+                                }
+                            });
+                        }
+                    }
+                });
             }]
         });
 
@@ -364,4 +486,3 @@ class CreateGraphsView extends View {
     }
 }
 
-    
