@@ -103,7 +103,7 @@ cumulative_df = pivot_df.cumsum()
 current_week = datetime.now().isocalendar()[1]
 cumulative_df = cumulative_df.loc[cumulative_df.index <= current_week]
 
-# Plot English Baptism Count Comparison
+# Plot with predictions for end of year English
 plt.figure(figsize=(12, 6))
 for year in cumulative_df.columns:
     color1 = red if year == previous_year else blue if year == current_year else None
@@ -115,17 +115,25 @@ for year in cumulative_df.columns:
         coef = np.polyfit(x, y, 1)
         poly1d_fn = np.poly1d(coef)
         color2 = light_red if year == previous_year else light_blue if year == current_year else None
-        plt.plot(x, poly1d_fn(x), linestyle='--', label=f'{year} Trend', color=color2)
+        x_reg = np.arange(x.min(), 53)
+        plt.plot(x_reg, poly1d_fn(x_reg), linestyle='--', label=f'{year} Trend', color=color2)
+        # Predict value at week 52
+        pred_week = 52
+        pred_value = poly1d_fn(pred_week)
+        plt.scatter([pred_week], [pred_value], color=color2, marker='x')
+        plt.text(pred_week, pred_value, f'{int(pred_value):,}', color=color2, fontsize=10, va='bottom', ha='left')
         
 plt.title(f'Baptism Count: {previous_year} vs {current_year}')
 plt.xlabel('Week Number')
 plt.ylabel('Baptisms')
 plt.legend()
 plt.tight_layout()
-plt.savefig(os.path.join(output_path, 'bap_year_comp_en.png'))
+output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
+os.makedirs(output_dir, exist_ok=True)
+plt.savefig(os.path.join(output_dir, 'bap_year_comp_pred_en.png'))
 plt.close()
 
-# Plot Japanese Baptism Count Comparison
+# Plot with predictions for end of year Japanese
 plt.figure(figsize=(12, 6))
 for year in cumulative_df.columns:
     color1 = red if year == previous_year else blue if year == current_year else None
@@ -137,14 +145,18 @@ for year in cumulative_df.columns:
         coef = np.polyfit(x, y, 1)
         poly1d_fn = np.poly1d(coef)
         color2 = light_red if year == previous_year else light_blue if year == current_year else None
-        plt.plot(x, poly1d_fn(x), linestyle='--', label=f'{year} 動向', color=color2)
+        x_reg = np.arange(x.min(), 53)
+        plt.plot(x_reg, poly1d_fn(x_reg), linestyle='--', label=f'{year} 動向', color=color2)
+        # Predict value at week 52
+        pred_week = 52
+        pred_value = poly1d_fn(pred_week)
+        plt.scatter([pred_week], [pred_value], color=color2, marker='x')
+        plt.text(pred_week, pred_value, f'{int(pred_value):,}', color=color2, fontsize=10, va='bottom', ha='left')
         
 plt.title(f'バプテスマを受けた人数の比較: {previous_year}年と{current_year}年')
 plt.xlabel('週番号')
 plt.ylabel('バプテスマを受けた人数')
 plt.legend()
 plt.tight_layout()
-output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
-os.makedirs(output_dir, exist_ok=True)
-plt.savefig(os.path.join(output_dir, 'bap_year_comp_jp.png'))
+plt.savefig(os.path.join(output_dir, 'bap_year_comp_pred_jp.png'))
 plt.close()

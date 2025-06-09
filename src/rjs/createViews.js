@@ -329,7 +329,7 @@ class CreateGraphsView extends View {
         new Element('IMG', galleryEntryKI, {
             elementClass: 'view-gallery-picture',
             attributes: {
-                'SRC': path.join(__dirname, '..', 'assets', 'KITableau.png'),
+                'SRC': path.join(__dirname, '..', 'assets', 'graphs', 'KITableau.png'),
                 'height': '175px',
             }
         });
@@ -347,7 +347,7 @@ class CreateGraphsView extends View {
             eventListener: ['click', () => {
                 const filePath = dialog.showOpenDialogSync({
                     properties: ['openFile'],
-                    defaultPath: path.join(__dirname, '..', 'input'),
+                    defaultPath: "C:\\Users\\2016702-REF\\OneDrive - Church of Jesus Christ\\Desktop",
                     filters: [
                         { name: 'KI File', extensions: ['csv', 'xlsx'] }
                     ]
@@ -371,7 +371,7 @@ class CreateGraphsView extends View {
         new Element('IMG', galleryEntryFD, {
             elementClass: 'view-gallery-picture',
             attributes: {
-                'SRC': path.join(__dirname, '..', 'assets', 'FDTableau.png'),
+                'SRC': path.join(__dirname, '..', 'assets', 'graphs', 'FDTableau.png'),
                 'height': '175px',
             }
         });
@@ -389,7 +389,7 @@ class CreateGraphsView extends View {
             eventListener: ['click', () => {
                 const filePath = dialog.showOpenDialogSync({
                     properties: ['openFile'],
-                    defaultPath: path.join(__dirname, '..', 'input'),
+                    defaultPath: "C:\\Users\\2016702-REF\\OneDrive - Church of Jesus Christ\\Desktop",
                     filters: [
                         { name: 'FD File', extensions: ['csv', 'xlsx'] }
                     ]
@@ -404,36 +404,40 @@ class CreateGraphsView extends View {
 
         this.addElement(fileGallery);
 
-        const comment2 = new Element('DIV', null, {
-            elementClass: 'view-comment',
-            text: 'Once you have uploaded both files, you can generate the graphs. This will run a Python script that processes the data and generates the graphs. All graphs generate in both English and Japanese. A new window will open and allow you to choose where to save the generated graphs.<br><br>Currently generated graphs are:<br>Baptism count by year<br>Baptism count by year with end-of-year predictions<br>Finding count by year<br>'
+        const subheaderOutputPath = new Element('H3', null, {
+            elementClass: 'view-gallery-subheader',
+            text: 'No output directory selected.'
         });
-        
-        this.addElement(comment2);
+
+        const pyDir = path.join(__dirname, '..', 'py');
+
+        let outputFilePath = null;
 
         const button = new Element('BUTTON', null, {
             elementClass: 'view-button',
-            text: 'Generate',
+            text: 'Select Output Directory',
             eventListener: ['click', () => {
-                if (!keyIndicatorFilePath || !findingDetailFilePath) {
-                    showMessage('Please upload both the Key Indicator and Finding Detail files.');
-                    return;
-                }
+
+                showMessage('Checking for Python dependencies...');
 
                 const outputPath = dialog.showOpenDialogSync({
                     title: 'Select Output Directory',
-                    defaultPath: path.join(__dirname, '..', 'output'),
+                    defaultPath: "C:\\Users\\2016702-REF\\OneDrive - Church of Jesus Christ\\Desktop",
                     properties: ['openDirectory']
                 });
-                // Run Python scripts to generate graphs
 
                 if (!outputPath || outputPath.length === 0) {
                     showMessage('Please select an output directory.');
                     return;
                 }
 
-                // Step 1: Ensure Python dependencies are installed
-                const requirementsPath = path.join(__dirname, '..', 'py', 'requirements.txt');
+                if (outputPath) {
+                    outputFilePath = outputPath[0];
+                    subheaderOutputPath.element.textContent = 'Output Directory: ' + outputFilePath;
+                }
+
+                // Ensure Python dependencies are installed
+                const requirementsPath = path.join(pyDir, 'requirements.txt');
                 const installProcess = spawn('python', ['-m', 'pip', 'install', '-r', requirementsPath]);
 
                 installProcess.stdout.on('data', (data) => {
@@ -448,41 +452,89 @@ class CreateGraphsView extends View {
                     if (installCode !== 0) {
                         showMessage('Failed to install Python dependencies. See console for details.');
                         return;
-                    }
-
-                    // Step 2: Run the main Python scripts
-                    for (const file of fs.readdirSync(path.join(__dirname, '..', 'py'))) {
-                        if (file.endsWith('.py')) {
-                            console.log(`Running Python script: ${file}`);
-                            let pythonProcess = spawn('python', [
-                                path.join(__dirname, '..', 'py', file),
-                                keyIndicatorFilePath,
-                                findingDetailFilePath,
-                                outputPath[0]
-                            ]);
-
-                            pythonProcess.stdout.on('data', (data) => {
-                                console.log(`Python stdout: ${data}`);
-                            });
-
-                            pythonProcess.stderr.on('data', (data) => {
-                                console.error(`Python stderr: ${data}`);
-                            });
-
-                            pythonProcess.on('close', (code) => {
-                                if (code === 0) {
-                                    showMessage(`${file} graphs generated successfully.`);
-                                } else {
-                                    showMessage(`Error generating ${file} graphs. See console for details.`);
-                                }
-                            });
-                        }
+                    } else {
+                        showMessage('Python dependencies installed successfully.');
                     }
                 });
             }]
         });
 
+        this.addElement(subheaderOutputPath);
         this.addElement(button);
+
+        const comment2 = new Element('DIV', null, {
+            elementClass: 'view-comment',
+            text: 'Once you have uploaded the files and selected an output directory, you can generate graphs by clicking the "Generate Graph" button for each graph.<br><br>Note: the graphs will generate using last year\'s and this year\'s data.'
+        });
+
+        const graphGallery = new Element('DIV', null, {
+            elementClass: 'view-double-gallery'
+        });
+
+        fs.readdirSync(pyDir).forEach(file => {
+            if (file.endsWith('.py')) {
+                const graphEntry = new Element('DIV', graphGallery, {
+                    elementClass: 'view-gallery-graphEntry'
+                });
+
+                new Element('H2', graphEntry, {
+                    elementClass: 'view-gallery-header',
+                    text: file
+                });
+
+                new Element('IMG', graphEntry, {
+                    elementClass: 'view-gallery-picture',
+                    attributes: {
+                        'SRC': path.join(__dirname, '..', 'assets', 'graphs', file.replace('.py', '_en.png')),
+                        'height': '175px',
+                    }
+                });
+
+                new Element('BUTTON', graphEntry, {
+                    elementClass: 'view-gallery-button',
+                    text: 'Generate Graph',
+                    eventListener: ['click', () => {
+
+                        showMessage(`Generating graphs for ${file}...`);
+
+                        if (!keyIndicatorFilePath || !findingDetailFilePath) {
+                            showMessage('Please upload both Key Indicator and Finding Detail files before generating graphs.');
+                            return;
+                        }
+
+                        if (!outputFilePath) {
+                            showMessage('Please select an output directory before generating graphs.');
+                            return;
+                        }
+
+                        const scriptPath = path.join(pyDir, file);
+                        const args = [keyIndicatorFilePath, findingDetailFilePath, outputFilePath];
+                        const pythonProcess = spawn('python', [scriptPath, ...args], {
+                            cwd: pyDir
+                        });
+
+                        pythonProcess.stdout.on('data', (data) => {
+                            console.log(`${file} stdout: ${data}`);
+                        });
+
+                        pythonProcess.stderr.on('data', (data) => {
+                            console.error(`${file} stderr: ${data}`);
+                        });
+
+                        pythonProcess.on('close', (code) => {
+                            if (code === 0) {
+                                showMessage(`${file} graphs generated successfully.`);
+                            } else {
+                                showMessage(`Error generating ${file} graphs. See console for details.`);
+                            }
+                        });
+                    }]
+                });
+            }
+        });
+
+        this.addElement(graphGallery);
+        
     }
 }
 

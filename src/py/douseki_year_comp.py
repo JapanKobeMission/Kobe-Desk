@@ -22,14 +22,14 @@ blue = '#0011ff'
 light_blue = '#0576ff'
 
 # sys.argv is the array of arguments passed to the script from the js
-# key_indicator_path = sys.argv[1]
-# finding_detail_path = sys.argv[2]
-# output_path = sys.argv[3]
+key_indicator_path = sys.argv[1]
+finding_detail_path = sys.argv[2]
+output_path = sys.argv[3]
 
 # temp paths for local testing
-key_indicator_path = "C:\\Users\\2016702-REF\\Downloads\\Missionary KI Table (1).xlsx"
-finding_detail_path = "C:\\Users\\2016702-REF\\Downloads\\Detail (7).xlsx"
-output_path = "C:\\Users\\2016702-REF\\VSCode Python Projects\\Kobe Desk swaHekuL\\Kobe-Desk\\src\\output"
+# key_indicator_path = "C:\\Users\\2016702-REF\\Downloads\\Missionary KI Table (1).xlsx"
+# finding_detail_path = "C:\\Users\\2016702-REF\\Downloads\\Detail (7).xlsx"
+# output_path = "C:\\Users\\2016702-REF\\VSCode Python Projects\\Kobe Desk swaHekuL\\Kobe-Desk\\src\\output"
 
 def read_data(file_path):
     ext = os.path.splitext(file_path)[1].lower()
@@ -162,5 +162,7 @@ if len(ml_cols) == 2:
     plt.ylabel('同席レッスンの数')
     plt.legend()
     plt.tight_layout()
-    plt.savefig(os.path.join(output_path, 'douseki_year_comp_jp.png'))
+    output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
+    os.makedirs(output_dir, exist_ok=True)
+    plt.savefig(os.path.join(output_dir, 'douseki_year_comp_jp.png'))
     plt.close()

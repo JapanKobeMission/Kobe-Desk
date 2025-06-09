@@ -22,14 +22,14 @@ blue = '#0011ff'
 light_blue = '#0576ff'
 
 # sys.argv is the array of arguments passed to the script from the js
-# key_indicator_path = sys.argv[1]
-# finding_detail_path = sys.argv[2]
-# output_path = sys.argv[3]
+key_indicator_path = sys.argv[1]
+finding_detail_path = sys.argv[2]
+output_path = sys.argv[3]
 
 # temp paths for local testing
-key_indicator_path = "C:\\Users\\2016702-REF\\Downloads\\Missionary KI Table (1).xlsx"
-finding_detail_path = "C:\\Users\\2016702-REF\\Downloads\\Detail (7).xlsx"
-output_path = "C:\\Users\\2016702-REF\\VSCode Python Projects\\Kobe Desk swaHekuL\\Kobe-Desk\\src\\output"
+# key_indicator_path = "C:\\Users\\2016702-REF\\Downloads\\Missionary KI Table (1).xlsx"
+# finding_detail_path = "C:\\Users\\2016702-REF\\Downloads\\Detail (7).xlsx"
+# output_path = "C:\\Users\\2016702-REF\\VSCode Python Projects\\Kobe Desk swaHekuL\\Kobe-Desk\\src\\output"
 
 def read_data(file_path):
     ext = os.path.splitext(file_path)[1].lower()
@@ -116,7 +116,7 @@ if len(sa_cols) == 2:
         data=df_plot,
         x='Week',
         y=sa_cols[0],
-        label=f'Douseki Lessons {years[0]}',
+        label=f'Sacrament Attendance {years[0]}',
         color=red,
         errorbar=None
     )
@@ -124,16 +124,16 @@ if len(sa_cols) == 2:
         data=df_plot,
         x='Week',
         y=sa_cols[1],
-        label=f'Douseki Lessons {years[1]}',
+        label=f'Sacrament Attendance {years[1]}',
         color=blue,
         errorbar=None
     )
-    plt.title(f'Douseki Lessons: {previous_year} vs {current_year}')
+    plt.title(f'Sacrament Attendance: {previous_year} vs {current_year}')
     plt.xlabel('Week Number')
-    plt.ylabel('Douseki Lessons')
+    plt.ylabel('Sacrament Attendance')
     plt.legend()
     plt.tight_layout()
-    plt.savefig(os.path.join(output_path, 'douseki_year_comp_en.png'))
+    plt.savefig(os.path.join(output_path, 'sac_att_year_comp_en.png'))
     plt.close()
 
 # Plot comparison of SA between previous year and current year, only up to the current week, Japanese
@@ -145,7 +145,7 @@ if len(sa_cols) == 2:
         data=df_plot,
         x='Week',
         y=sa_cols[0],
-        label=f'同席レッスン {years[0]}年',
+        label=f'聖餐会の出席 {years[0]}年',
         color=red,
         errorbar=None
     )
@@ -153,14 +153,16 @@ if len(sa_cols) == 2:
         data=df_plot,
         x='Week',
         y=sa_cols[1],
-        label=f'同席レッスン {years[1]}年',
+        label=f'聖餐会の出席 {years[1]}年',
         color=blue,
         errorbar=None
     )
-    plt.title(f'同席レッスンの数: {previous_year}年と{current_year}年')
+    plt.title(f'聖餐会の出席: {previous_year}年と{current_year}年')
     plt.xlabel('週番号')
-    plt.ylabel('同席レッスンの数')
+    plt.ylabel('聖餐会の出席')
     plt.legend()
     plt.tight_layout()
-    plt.savefig(os.path.join(output_path, 'douseki_year_comp_jp.png'))
+    output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
+    os.makedirs(output_dir, exist_ok=True)
+    plt.savefig(os.path.join(output_dir, 'sac_att_year_comp_jp.png'))
     plt.close()

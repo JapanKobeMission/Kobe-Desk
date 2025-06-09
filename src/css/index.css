@@ -146,10 +146,16 @@ button.view-button {
     font-size: 10pt;
     color: #fff;
     background: #555;
-    border: none;
+    border: solid 2px #767676;
     cursor: pointer;
     padding: 0 25px;
     outline: none;
+    transition: background 0.3s;
+}
+
+button.view-button:hover {
+    background: #fff;
+    color: #555;
 }
 
 h1.view-header {
@@ -224,6 +230,12 @@ button.view-gallery-button {
     cursor: pointer;
     padding: 0 25px;
     outline: none;
+    transition: background 0.3s;
+}
+
+button.view-gallery-button:hover {
+    background: #626262;
+    color: #fff;
 }
 
 ::-webkit-scrollbar {
