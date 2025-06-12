@@ -347,7 +347,7 @@ class CreateGraphsView extends View {
             eventListener: ['click', () => {
                 const filePath = dialog.showOpenDialogSync({
                     properties: ['openFile'],
-                    defaultPath: "C:\\Users\\2016702-REF\\OneDrive - Church of Jesus Christ\\Desktop",
+                    defaultPath: "C:\\Users\\2016702-REF\\OneDrive - Church of Jesus Christ\\Desktop\\Kobe Desk",
                     filters: [
                         { name: 'KI File', extensions: ['csv', 'xlsx'] }
                     ]
@@ -389,7 +389,7 @@ class CreateGraphsView extends View {
             eventListener: ['click', () => {
                 const filePath = dialog.showOpenDialogSync({
                     properties: ['openFile'],
-                    defaultPath: "C:\\Users\\2016702-REF\\OneDrive - Church of Jesus Christ\\Desktop",
+                    defaultPath: "C:\\Users\\2016702-REF\\OneDrive - Church of Jesus Christ\\Desktop\\Kobe Desk",
                     filters: [
                         { name: 'FD File', extensions: ['csv', 'xlsx'] }
                     ]
@@ -409,7 +409,7 @@ class CreateGraphsView extends View {
             text: 'No output directory selected.'
         });
 
-        const pyDir = path.join(__dirname, '..', 'py');
+        const pyDir = 'C:\\Users\\2016702-REF\\VSCode Python Projects\\Kobe Desk swaHekuL\\Kobe-Desk\\src\\py';
 
         let outputFilePath = null;
 

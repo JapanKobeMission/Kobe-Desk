@@ -122,7 +122,9 @@ plt.xlabel('Week Number')
 plt.ylabel('Baptisms')
 plt.legend()
 plt.tight_layout()
-plt.savefig(os.path.join(output_path, 'bap_year_comp_en.png'))
+output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
+os.makedirs(output_dir, exist_ok=True)
+plt.savefig(os.path.join(output_dir, 'bap_year_comp_en.png'))
 plt.close()
 
 # Plot Japanese Baptism Count Comparison

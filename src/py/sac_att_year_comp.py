@@ -133,7 +133,9 @@ if len(sa_cols) == 2:
     plt.ylabel('Sacrament Attendance')
     plt.legend()
     plt.tight_layout()
-    plt.savefig(os.path.join(output_path, 'sac_att_year_comp_en.png'))
+    output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
+    os.makedirs(output_dir, exist_ok=True)
+    plt.savefig(os.path.join(output_dir, 'sac_att_year_comp_en.png'))
     plt.close()
 
 # Plot comparison of SA between previous year and current year, only up to the current week, Japanese
