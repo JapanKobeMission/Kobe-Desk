@@ -104,7 +104,7 @@ current_week = datetime.now().isocalendar()[1]
 cumulative_df = cumulative_df.loc[cumulative_df.index <= current_week]
 
 # Plot with predictions for end of year English
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(16, 9))
 for year in cumulative_df.columns:
     color1 = red if year == previous_year else blue if year == current_year else None
     plt.plot(cumulative_df.index, cumulative_df[year], marker='o', label=str(year), color=color1)
@@ -134,11 +134,11 @@ plt.legend()
 plt.tight_layout()
 output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
 os.makedirs(output_dir, exist_ok=True)
-plt.savefig(os.path.join(output_dir, 'bap_year_comp_pred_goal_en.png'))
+plt.savefig(os.path.join(output_dir, 'bap_year_comp_pred_goal_en.png'), dpi=100)
 plt.close()
 
 # Plot with predictions for end of year Japanese
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(16, 9))
 for year in cumulative_df.columns:
     color1 = red if year == previous_year else blue if year == current_year else None
     plt.plot(cumulative_df.index, cumulative_df[year], marker='o', label=str(year), color=color1)
@@ -166,5 +166,5 @@ plt.xlabel('週番号')
 plt.ylabel('バプテスマを受けた人数')
 plt.legend()
 plt.tight_layout()
-plt.savefig(os.path.join(output_dir, 'bap_year_comp_pred_goal_jp.png'))
+plt.savefig(os.path.join(output_dir, 'bap_year_comp_pred_goal_jp.png'), dpi=100)
 plt.close()

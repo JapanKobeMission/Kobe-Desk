@@ -112,7 +112,7 @@ np_cols = [f'NP {year}' for year in years if f'NP {year}' in df_ki_pivot.columns
 if len(np_cols) == 2:
     current_week = datetime.now().isocalendar()[1]
     df_plot = df_weekly_sum[df_weekly_sum['Week'] <= current_week]
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(16, 9))
     sns.lineplot(
         data=df_plot,
         x='Week',
@@ -136,14 +136,14 @@ if len(np_cols) == 2:
     plt.tight_layout()
     output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
     os.makedirs(output_dir, exist_ok=True)
-    plt.savefig(os.path.join(output_dir, 'find_year_comp_en.png'))
+    plt.savefig(os.path.join(output_dir, 'find_year_comp_en.png'), dpi=100)
     plt.close()
 
 # Plot comparison of NP between previous year and current year, only up to the current week, Japanese
 if len(np_cols) == 2:
     current_week = datetime.now().isocalendar()[1]
     df_plot = df_weekly_sum[df_weekly_sum['Week'] <= current_week]
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(16, 9))
     sns.lineplot(
         data=df_plot,
         x='Week',
@@ -167,5 +167,5 @@ if len(np_cols) == 2:
     plt.tight_layout()
     output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
     os.makedirs(output_dir, exist_ok=True)
-    plt.savefig(os.path.join(output_dir, 'find_year_comp_jp.png'))
+    plt.savefig(os.path.join(output_dir, 'find_year_comp_jp.png'), dpi=100)
     plt.close()

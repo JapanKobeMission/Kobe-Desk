@@ -77,7 +77,7 @@ df_fd_green_dots['Green Dot Year'] = df_fd_green_dots['First New Person Being Ta
 current_year = datetime.now().year
 previous_year = current_year - 1
 
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(16, 9))
 sns.countplot(data=df_fd_green_dots, y='Finding Source', order=df_fd_green_dots['Finding Source'].value_counts().index, palette='viridis')
 plt.title(f'Green Dots per Finding Source: {previous_year} - {current_year}', fontsize=14, fontweight='bold')
 plt.xlabel('Green Dots', fontsize=12)
@@ -85,10 +85,10 @@ plt.ylabel('Finding Source', fontsize=12)
 plt.tight_layout()
 output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
 os.makedirs(output_dir, exist_ok=True)
-plt.savefig(os.path.join(output_dir, 'green_dots_by_find_source_en.png'))
+plt.savefig(os.path.join(output_dir, 'green_dots_by_find_source_en.png'), dpi=100)
 plt.close()
 
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(16, 9))
 sns.countplot(data=df_fd_green_dots, y='Finding Source', order=df_fd_green_dots['Finding Source'].value_counts().index, palette='viridis')
 plt.title(f'ファインディング方法によるグリーンドット: {previous_year}年と{current_year}年', fontsize=14, fontweight='bold')
 plt.xlabel('グリーンドット', fontsize=12)
@@ -96,5 +96,5 @@ plt.ylabel('ファインディング方法', fontsize=12)
 plt.tight_layout()
 output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
 os.makedirs(output_dir, exist_ok=True)
-plt.savefig(os.path.join(output_dir, 'green_dots_by_find_source_jp.png'))
+plt.savefig(os.path.join(output_dir, 'green_dots_by_find_source_jp.png'), dpi=100)
 plt.close()

@@ -88,7 +88,7 @@ finding_source_percentages = finding_source_percentages.reset_index()
 finding_source_percentages.columns = ['Finding Source', 'Percentage'] 
 
 # Plotting the percentage of baptisms by finding source
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(16, 9))
 ax = sns.barplot(
         data=finding_source_percentages,
         y='Finding Source',
@@ -114,7 +114,7 @@ for i, (bar, count) in enumerate(zip(ax.patches, counts_in_order)):
 # Save the plot
 output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
 os.makedirs(output_dir, exist_ok=True)
-plt.savefig(os.path.join(output_dir, 'bap_by_find_source_en.png'))
+plt.savefig(os.path.join(output_dir, 'bap_by_find_source_en.png'), dpi=100)
 plt.close()
 
 # Plotting the percentage of baptisms by finding source in Japanese
@@ -139,7 +139,7 @@ finding_source_percentages = df_fd_confirmed['Finding Source'].value_counts(norm
 finding_source_percentages = finding_source_percentages.reset_index()
 finding_source_percentages.columns = ['Finding Source', 'Percentage'] 
 
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(16, 9))
 ax = sns.barplot(
         data=finding_source_percentages,
         y='Finding Source',
@@ -165,5 +165,5 @@ for i, (bar, count) in enumerate(zip(ax.patches, counts_in_order)):
 # Save the plot
 output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
 os.makedirs(output_dir, exist_ok=True)
-plt.savefig(os.path.join(output_dir, 'bap_by_find_source_jp.png'))
+plt.savefig(os.path.join(output_dir, 'bap_by_find_source_jp.png'), dpi=100)
 plt.close()
