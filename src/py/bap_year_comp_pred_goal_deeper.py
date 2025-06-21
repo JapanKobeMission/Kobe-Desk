@@ -3,9 +3,11 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt 
 from matplotlib import rcParams
+import matplotlib
 from datetime import datetime
 import sys
 import os
+matplotlib.use('Agg')
 
 # pandas options
 pd.set_option("display.max_columns", None)  # Show up to 50 columns
@@ -23,14 +25,14 @@ blue = '#0011ff'
 light_blue = '#0576ff'
 
 # sys.argv is the array of arguments passed to the script from the js
-key_indicator_path = sys.argv[1]
-finding_detail_path = sys.argv[2]
-output_path = sys.argv[3]
+# key_indicator_path = sys.argv[1]
+# finding_detail_path = sys.argv[2]
+# output_path = sys.argv[3]
 
 # temp paths for local testing
-# key_indicator_path = "C:\\Users\\2016702-REF\\Downloads\\Missionary KI Table (1).xlsx"
-# finding_detail_path = "C:\\Users\\2016702-REF\\Downloads\\Detail (7).xlsx"
-# output_path = "C:\\Users\\2016702-REF\\VSCode Python Projects\\Kobe Desk swaHekuL\\Kobe-Desk\\src\\output"
+key_indicator_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Missionary KI Table (2).xlsx"
+finding_detail_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Detail (9).xlsx"
+output_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Output Graphs"
 
 def read_data(file_path):
     ext = os.path.splitext(file_path)[1].lower()
@@ -104,10 +106,11 @@ current_week = datetime.now().isocalendar()[1]
 cumulative_df = cumulative_df.loc[cumulative_df.index <= current_week]
 
 # Plot with predictions for end of year English
-plt.figure(figsize=(12, 6))
+plt.close('all')  # Close any existing plots
+fig, ax = plt.subplots(figsize=(16, 9))
 for year in cumulative_df.columns:
     color1 = red if year == previous_year else blue if year == current_year else None
-    plt.plot(cumulative_df.index, cumulative_df[year], marker='o', label=str(year), color=color1)
+    ax.plot(cumulative_df.index, cumulative_df[year], marker='o', label=str(year), color=color1)
     # Linear regression
     x = cumulative_df.index.values
     y = cumulative_df[year].values
@@ -116,16 +119,16 @@ for year in cumulative_df.columns:
         poly1d_fn = np.poly1d(coef)
         color2 = light_red if year == previous_year else light_blue if year == current_year else None
         x_reg = np.arange(x.min(), 53)
-        plt.plot(x_reg, poly1d_fn(x_reg), linestyle='--', label=f'{year} Trend', color=color2)
+        ax.plot(x_reg, poly1d_fn(x_reg), linestyle='--', label=f'{year} Trend', color=color2)
         # Predict value at week 52
         pred_week = 52
         pred_value = poly1d_fn(pred_week)
-        plt.scatter([pred_week], [pred_value], color=color2, marker='x')
-        plt.text(pred_week, pred_value, f'{int(pred_value):,}', color=color2, fontsize=10, va='bottom', ha='left')
+        ax.scatter([pred_week], [pred_value], color=color2, marker='x')
+        ax.text(pred_week, pred_value, f'{int(pred_value):,}', color=color2, fontsize=10, va='bottom', ha='left')
 # Plot the manual prediction line for week 52, baptisms = 154
-plt.plot([0, 52], [0, 154], linestyle=':', color='green', label='2025 Goal')
-plt.scatter([52], [154], color='green', marker='x')
-plt.text(52, 154, '154', color='green', fontsize=10, va='bottom', ha='left')
+ax.plot([0, 52], [0, 154], linestyle=':', color='green', label='2025 Goal')
+ax.scatter([52], [154], color='green', marker='x')
+ax.text(52, 154, '154', color='green', fontsize=10, va='bottom', ha='left')
 # Draw a line from (max x, max y) of current year to (52, 154) and display the slope
 current_year_col = current_year if current_year in cumulative_df.columns else cumulative_df.columns[-1]
 current_year_data = cumulative_df[current_year_col].dropna()
@@ -134,24 +137,27 @@ if not current_year_data.empty:
     max_y = current_year_data.loc[max_x]
     x1, y1 = max_x, max_y
     x2, y2 = 52, 154
-    plt.plot([x1, x2], [y1, y2], linestyle='-.', color='purple', label='Change Needed to Meet Goal')
+    ax.plot([x1, x2], [y1, y2], linestyle='-.', color='purple', label='Change Needed to Meet Goal')
     # Calculate and display the slope
     if x2 != x1:
         slope = (y2 - y1) / (x2 - x1)
-        plt.text((x1 + x2) / 2, (y1 + y2) / 2, f'Weekly Baptisms Needed: {slope:.2f}', color='purple', fontsize=10, va='bottom', ha='left')
+        ax.text((x1 + x2) / 2, (y1 + y2) / 2, f'Weekly Baptisms Needed: {slope:.2f}', color='purple', fontsize=10, va='bottom', ha='left')
         
-plt.title(f'Baptism Count: {previous_year} vs {current_year}')
-plt.xlabel('Week Number')
-plt.ylabel('Baptisms')
-plt.legend()
-plt.tight_layout()
+ax.set_title(f'Baptism Count: {previous_year} vs {current_year}')
+ax.set_xlabel('Week Number')
+ax.set_ylabel('Baptisms')
+ax.legend()
+# plt.tight_layout()
 output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
 os.makedirs(output_dir, exist_ok=True)
-plt.savefig(os.path.join(output_dir, 'bap_year_comp_pred_goal_deeper_en.png'))
-plt.close()
+print("Figure size (inches):", fig.get_size_inches())
+print("Figure DPI:", fig.dpi)
+print("Expected resolution (pixels):", fig.get_size_inches() * fig.dpi)
+fig.savefig(os.path.join(output_dir, 'bap_year_comp_pred_goal_deeper_en.png'), dpi=100)
+plt.close(fig)
 
 # Plot with predictions for end of year Japanese
-plt.figure(figsize=(12, 6))
+fig = plt.figure(figsize=(16, 9))
 for year in cumulative_df.columns:
     color1 = red if year == previous_year else blue if year == current_year else None
     plt.plot(cumulative_df.index, cumulative_df[year], marker='o', label=str(year), color=color1)
@@ -191,6 +197,6 @@ plt.title(f'バプテスマを受けた人数の比較: {previous_year}年と{cu
 plt.xlabel('週番号')
 plt.ylabel('バプテスマを受けた人数')
 plt.legend()
-plt.tight_layout()
-plt.savefig(os.path.join(output_dir, 'bap_year_comp_pred_goal_deeper_jp.png'))
-plt.close()
+# plt.tight_layout()
+fig.savefig(os.path.join(output_dir, 'bap_year_comp_pred_goal_deeper_jp.png'), dpi=100)
+plt.close(fig)
