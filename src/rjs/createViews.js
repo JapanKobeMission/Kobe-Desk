@@ -422,7 +422,7 @@ class CreateGraphsView extends View {
 
                 const outputPath = dialog.showOpenDialogSync({
                     title: 'Select Output Directory',
-                    defaultPath: "C:\\Users\\2016702-REF\\OneDrive - Church of Jesus Christ\\Desktop",
+                    defaultPath: "C:\\Users\\2016702-REF\\OneDrive - Church of Jesus Christ\\Desktop\\Kobe Desk\\Output Graphs",
                     properties: ['openDirectory']
                 });
 
