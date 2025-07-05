@@ -3,9 +3,11 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt 
 from matplotlib import rcParams
+import matplotlib
 from datetime import datetime
 import sys
 import os
+matplotlib.use('Agg')
 
 # pandas options
 pd.set_option("display.max_columns", None)  # Show up to 50 columns
@@ -23,14 +25,14 @@ blue = '#0011ff'
 light_blue = '#0576ff'
 
 # sys.argv is the array of arguments passed to the script from the js
-key_indicator_path = sys.argv[1]
-finding_detail_path = sys.argv[2]
-output_path = sys.argv[3]
+# key_indicator_path = sys.argv[1]
+# finding_detail_path = sys.argv[2]
+# output_path = sys.argv[3]
 
 # temp paths for local testing
-# key_indicator_path = "C:\\Users\\2016702-REF\\Downloads\\Missionary KI Table (1).xlsx"
-# finding_detail_path = "C:\\Users\\2016702-REF\\Downloads\\Detail (7).xlsx"
-# output_path = "C:\\Users\\2016702-REF\\VSCode Python Projects\\Kobe Desk swaHekuL\\Kobe-Desk\\src\\output"
+key_indicator_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Missionary KI Table (2).xlsx"
+finding_detail_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Detail (9).xlsx"
+output_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Output Graphs"
 
 def read_data(file_path):
     ext = os.path.splitext(file_path)[1].lower()
@@ -104,6 +106,7 @@ current_week = datetime.now().isocalendar()[1]
 cumulative_df = cumulative_df.loc[cumulative_df.index <= current_week]
 
 # Plot with predictions for end of year English
+plt.close('all')  # Close any existing plots
 plt.figure(figsize=(16, 9))
 for year in cumulative_df.columns:
     color1 = red if year == previous_year else blue if year == current_year else None
@@ -126,15 +129,28 @@ for year in cumulative_df.columns:
 plt.plot([0, 52], [0, 154], linestyle=':', color='green', label='2025 Goal')
 plt.scatter([52], [154], color='green', marker='x')
 plt.text(52, 154, '154', color='green', fontsize=10, va='bottom', ha='left')
+# Draw a line from (max x, max y) of current year to (52, 154) and display the slope
+current_year_col = current_year if current_year in cumulative_df.columns else cumulative_df.columns[-1]
+current_year_data = cumulative_df[current_year_col].dropna()
+if not current_year_data.empty:
+    max_x = current_year_data.index.max()
+    max_y = current_year_data.loc[max_x]
+    x1, y1 = max_x, max_y
+    x2, y2 = 52, 154
+    plt.plot([x1, x2], [y1, y2], linestyle='-.', color='purple', label='Change Needed to Meet Goal')
+    # Calculate and display the slope
+    if x2 != x1:
+        slope = (y2 - y1) / (x2 - x1)
+        plt.text((x1 + x2) / 2, (y1 + y2) / 2, f'Weekly Baptisms Needed: {slope:.2f}', color='purple', fontsize=10, va='bottom', ha='left')
         
-plt.title(f'Baptism Count: {previous_year} vs {current_year}')
+plt.title(f'Baptism Count: {previous_year} vs {current_year} YTD')
 plt.xlabel('Week Number')
 plt.ylabel('Baptisms')
 plt.legend()
 plt.tight_layout()
 output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
 os.makedirs(output_dir, exist_ok=True)
-plt.savefig(os.path.join(output_dir, 'bap_year_comp_pred_goal_en.png'), dpi=100)
+plt.savefig(os.path.join(output_dir, 'bap_year_comp_pred_goal_deeper_en.png'), dpi=100)
 plt.close()
 
 # Plot with predictions for end of year Japanese
@@ -160,11 +176,24 @@ for year in cumulative_df.columns:
 plt.plot([0, 52], [0, 154], linestyle=':', color='green', label='2025年の目標')
 plt.scatter([52], [154], color='green', marker='x')
 plt.text(52, 154, '154', color='green', fontsize=10, va='bottom', ha='left')
+# Draw a line from (max x, max y) of current year to (52, 154) and display the slope
+current_year_col = current_year if current_year in cumulative_df.columns else cumulative_df.columns[-1]
+current_year_data = cumulative_df[current_year_col].dropna()
+if not current_year_data.empty:
+    max_x = current_year_data.index.max()
+    max_y = current_year_data.loc[max_x]
+    x1, y1 = max_x, max_y
+    x2, y2 = 52, 154
+    plt.plot([x1, x2], [y1, y2], linestyle='-.', color='purple', label='目標達成に必要な推移')
+    # Calculate and display the slope
+    if x2 != x1:
+        slope = (y2 - y1) / (x2 - x1)
+        plt.text((x1 + x2) / 2, (y1 + y2) / 2, f'必要な週ごとのバプテスマ数: {slope:.2f}', color='purple', fontsize=10, va='bottom', ha='left')
         
-plt.title(f'バプテスマを受けた人数の比較: {previous_year}年と{current_year}年')
+plt.title(f'バプテスマを受けた人数の比較: {previous_year}年と{current_year}年 年初来')
 plt.xlabel('週番号')
 plt.ylabel('バプテスマを受けた人数')
 plt.legend()
 plt.tight_layout()
-plt.savefig(os.path.join(output_dir, 'bap_year_comp_pred_goal_jp.png'), dpi=100)
+plt.savefig(os.path.join(output_dir, 'bap_year_comp_pred_goal_deeper_jp.png'), dpi=100)
 plt.close()

@@ -99,7 +99,7 @@ ax = sns.barplot(
 
 plt.xlabel('Percentage of Total (%)', fontsize=12)  # Percentage of Total (%)
 plt.ylabel('Finding Source', fontsize=12)  # Finding Source
-plt.title(f'Baptisms by Finding Source: {previous_year} - {current_year}', fontsize=14, fontweight='bold')    
+plt.title(f'Baptisms by Finding Source: {previous_year} - {current_year} YTD', fontsize=14, fontweight='bold')    
 plt.tight_layout()
 
 # Add count labels to each bar
@@ -150,7 +150,7 @@ ax = sns.barplot(
 
 plt.xlabel('各種の割合 (%)', fontsize=12)  # Percentage of Total (%)
 plt.ylabel('ファインディング方法', fontsize=12)  # Finding Source
-plt.title(f'ファインディング方法別のバプテスマ割合: {previous_year}年と{current_year}年', fontsize=14, fontweight='bold')    
+plt.title(f'ファインディング方法別のバプテスマ割合: {previous_year}年と{current_year}年 年初来', fontsize=14, fontweight='bold')    
 plt.tight_layout()
 
 # Add count labels to each bar

@@ -79,7 +79,7 @@ previous_year = current_year - 1
 
 plt.figure(figsize=(16, 9))
 sns.countplot(data=df_fd_green_dots, y='Finding Source', order=df_fd_green_dots['Finding Source'].value_counts().index, palette='viridis')
-plt.title(f'Green Dots per Finding Source: {previous_year} - {current_year}', fontsize=14, fontweight='bold')
+plt.title(f'Green Dots per Finding Source: {previous_year} - {current_year} YTD', fontsize=14, fontweight='bold')
 plt.xlabel('Green Dots', fontsize=12)
 plt.ylabel('Finding Source', fontsize=12)
 plt.tight_layout()
@@ -90,7 +90,7 @@ plt.close()
 
 plt.figure(figsize=(16, 9))
 sns.countplot(data=df_fd_green_dots, y='Finding Source', order=df_fd_green_dots['Finding Source'].value_counts().index, palette='viridis')
-plt.title(f'ファインディング方法によるグリーンドット: {previous_year}年と{current_year}年', fontsize=14, fontweight='bold')
+plt.title(f'ファインディング方法によるグリーンドット: {previous_year}年と{current_year}年 年初来', fontsize=14, fontweight='bold')
 plt.xlabel('グリーンドット', fontsize=12)
 plt.ylabel('ファインディング方法', fontsize=12)
 plt.tight_layout()

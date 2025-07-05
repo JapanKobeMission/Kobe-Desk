@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt 
 from matplotlib import rcParams
@@ -42,7 +43,7 @@ def read_data(file_path):
 
 df_ki = read_data(key_indicator_path)
 
-# === Compare Sacrament Attendance between Current Year and Previous Year ===
+# === Compare Finds between Current Year and Previous Year ===
 # rename columns for clarity
 df_ki = df_ki.rename(columns={
     'Unnamed: 0': 'Week Index',
@@ -102,69 +103,69 @@ df_ki_pivot = df_ki_grouped.pivot_table(index=['Zone', 'District', 'Area', 'Week
 df_ki_pivot.columns = [' '.join(map(str, col)).strip() for col in df_ki_pivot.columns.values]
 
 # Group by 'Week' and sum across all areas/zones/districts
-df_weekly_sum = df_ki_pivot.groupby('Week')[[col for col in df_ki_pivot.columns if col.startswith('SA')]].sum().reset_index()
+df_weekly_sum = df_ki_pivot.groupby('Week')[[col for col in df_ki_pivot.columns if col.startswith('NP')]].sum().reset_index()
 
-# Plot comparison of SA between previous year and current year, only up to the current week, English
+# Plot comparison of NP between previous year and current year, only up to the current week, English
 years = [previous_year, current_year]
-sa_cols = [f'SA {year}' for year in years if f'SA {year}' in df_ki_pivot.columns]
+np_cols = [f'NP {year}' for year in years if f'NP {year}' in df_ki_pivot.columns]
 
-if len(sa_cols) == 2:
+if len(np_cols) == 2:
     current_week = datetime.now().isocalendar()[1]
     df_plot = df_weekly_sum[df_weekly_sum['Week'] <= current_week]
     plt.figure(figsize=(16, 9))
     sns.lineplot(
         data=df_plot,
         x='Week',
-        y=sa_cols[0],
-        label=f'Sacrament Attendance {years[0]}',
+        y=np_cols[0],
+        label=f'New People {years[0]}',
         color=red,
         errorbar=None
     )
     sns.lineplot(
         data=df_plot,
         x='Week',
-        y=sa_cols[1],
-        label=f'Sacrament Attendance {years[1]}',
+        y=np_cols[1],
+        label=f'New People {years[1]}',
         color=blue,
         errorbar=None
     )
-    plt.title(f'Sacrament Attendance: {previous_year} vs {current_year}')
+    plt.title(f'New People Found: {previous_year} vs {current_year} YTD')
     plt.xlabel('Week Number')
-    plt.ylabel('Sacrament Attendance')
+    plt.ylabel('New People Found')
     plt.legend()
     plt.tight_layout()
     output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
     os.makedirs(output_dir, exist_ok=True)
-    plt.savefig(os.path.join(output_dir, 'sac_att_year_comp_en.png'), dpi=100)
+    plt.savefig(os.path.join(output_dir, 'find_year_comp_en.png'), dpi=100)
     plt.close()
 
-# Plot comparison of SA between previous year and current year, only up to the current week, Japanese
-if len(sa_cols) == 2:
+# Plot comparison of NP between previous year and current year, only up to the current week, Japanese
+if len(np_cols) == 2:
     current_week = datetime.now().isocalendar()[1]
     df_plot = df_weekly_sum[df_weekly_sum['Week'] <= current_week]
     plt.figure(figsize=(16, 9))
     sns.lineplot(
         data=df_plot,
         x='Week',
-        y=sa_cols[0],
-        label=f'聖餐会の出席 {years[0]}年',
+        y=np_cols[0],
+        label=f'新しい人 {years[0]}年',
         color=red,
         errorbar=None
     )
     sns.lineplot(
         data=df_plot,
         x='Week',
-        y=sa_cols[1],
-        label=f'聖餐会の出席 {years[1]}年',
+        y=np_cols[1],
+        label=f'新しい人 {years[1]}年',
         color=blue,
         errorbar=None
     )
-    plt.title(f'聖餐会の出席: {previous_year}年と{current_year}年')
+    plt.title(f'新しい見つけた人数: {previous_year}年と{current_year}年 年初来')
     plt.xlabel('週番号')
-    plt.ylabel('聖餐会の出席')
+    plt.ylabel('新しい見つけた人数')
     plt.legend()
     plt.tight_layout()
     output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
     os.makedirs(output_dir, exist_ok=True)
-    plt.savefig(os.path.join(output_dir, 'sac_att_year_comp_jp.png'), dpi=100)
+    plt.savefig(os.path.join(output_dir, 'find_year_comp_jp.png'), dpi=100)
     plt.close()
