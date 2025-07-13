@@ -122,6 +122,11 @@ for year in cumulative_df.columns:
         pred_value = poly1d_fn(pred_week)
         plt.scatter([pred_week], [pred_value], color=color2, marker='x')
         plt.text(pred_week, pred_value, f'{int(pred_value):,}', color=color2, fontsize=10, va='bottom', ha='left')
+    # Add label to the last point
+    if len(x) > 0:
+        max_x = x[-1]
+        max_y = y[-1]
+        plt.text(max_x + 0.2, max_y, f'{int(max_y)}', va='center', fontsize=12, color=color1)
 # Plot the manual prediction line for week 52, baptisms = 154
 plt.plot([0, 52], [0, 154], linestyle=':', color='green', label='2025 Goal')
 plt.scatter([52], [154], color='green', marker='x')
@@ -156,6 +161,11 @@ for year in cumulative_df.columns:
         pred_value = poly1d_fn(pred_week)
         plt.scatter([pred_week], [pred_value], color=color2, marker='x')
         plt.text(pred_week, pred_value, f'{int(pred_value):,}', color=color2, fontsize=10, va='bottom', ha='left')
+    # Add label to the last point
+    if len(x) > 0:
+        max_x = x[-1]
+        max_y = y[-1]
+        plt.text(max_x + 0.2, max_y, f'{int(max_y)}', va='center', fontsize=12, color=color1)
 # Plot the manual prediction line for week 52, baptisms = 154
 plt.plot([0, 52], [0, 154], linestyle=':', color='green', label='2025年の目標')
 plt.scatter([52], [154], color='green', marker='x')

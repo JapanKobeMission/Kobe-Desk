@@ -25,14 +25,14 @@ blue = '#0011ff'
 light_blue = '#0576ff'
 
 # sys.argv is the array of arguments passed to the script from the js
-# key_indicator_path = sys.argv[1]
-# finding_detail_path = sys.argv[2]
-# output_path = sys.argv[3]
+key_indicator_path = sys.argv[1]
+finding_detail_path = sys.argv[2]
+output_path = sys.argv[3]
 
 # temp paths for local testing
-key_indicator_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Missionary KI Table (2).xlsx"
-finding_detail_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Detail (9).xlsx"
-output_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Output Graphs"
+# key_indicator_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Missionary KI Table (2).xlsx"
+# finding_detail_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Detail (9).xlsx"
+# output_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Output Graphs"
 
 def read_data(file_path):
     ext = os.path.splitext(file_path)[1].lower()
@@ -125,6 +125,11 @@ for year in cumulative_df.columns:
         pred_value = poly1d_fn(pred_week)
         plt.scatter([pred_week], [pred_value], color=color2, marker='x')
         plt.text(pred_week, pred_value, f'{int(pred_value):,}', color=color2, fontsize=10, va='bottom', ha='left')
+    # Add label to the last point
+    if len(x) > 0:
+        max_x = x[-1]
+        max_y = y[-1]
+        plt.text(max_x + 0.2, max_y, f'{int(max_y)}', va='center', fontsize=12, color=color1)
 # Plot the manual prediction line for week 52, baptisms = 154
 plt.plot([0, 52], [0, 154], linestyle=':', color='green', label='2025 Goal')
 plt.scatter([52], [154], color='green', marker='x')
@@ -172,6 +177,11 @@ for year in cumulative_df.columns:
         pred_value = poly1d_fn(pred_week)
         plt.scatter([pred_week], [pred_value], color=color2, marker='x')
         plt.text(pred_week, pred_value, f'{int(pred_value):,}', color=color2, fontsize=10, va='bottom', ha='left')
+    # Add label to the last point
+    if len(x) > 0:
+        max_x = x[-1]
+        max_y = y[-1]
+        plt.text(max_x + 0.2, max_y, f'{int(max_y)}', va='center', fontsize=12, color=color1)
 # Plot the manual prediction line for week 52, baptisms = 154
 plt.plot([0, 52], [0, 154], linestyle=':', color='green', label='2025年の目標')
 plt.scatter([52], [154], color='green', marker='x')

@@ -122,6 +122,11 @@ for year in cumulative_df.columns:
         pred_value = poly1d_fn(pred_week)
         plt.scatter([pred_week], [pred_value], color=color2, marker='x')
         plt.text(pred_week, pred_value, f'{int(pred_value):,}', color=color2, fontsize=10, va='bottom', ha='left')
+    # Add label to the last point
+    if len(x) > 0:
+        max_x = x[-1]
+        max_y = y[-1]
+        plt.text(max_x + 0.2, max_y, f'{int(max_y)}', va='center', fontsize=12, color=color1)
         
 plt.title(f'Baptism Count: {previous_year} vs {current_year} YTD')
 plt.xlabel('Week Number')
@@ -152,6 +157,11 @@ for year in cumulative_df.columns:
         pred_value = poly1d_fn(pred_week)
         plt.scatter([pred_week], [pred_value], color=color2, marker='x')
         plt.text(pred_week, pred_value, f'{int(pred_value):,}', color=color2, fontsize=10, va='bottom', ha='left')
+    # Add label to the last point
+    if len(x) > 0:
+        max_x = x[-1]
+        max_y = y[-1]
+        plt.text(max_x + 0.2, max_y, f'{int(max_y)}', va='center', fontsize=12, color=color1)
         
 plt.title(f'バプテスマを受けた人数の比較: {previous_year}年と{current_year}年 年初来')
 plt.xlabel('週番号')

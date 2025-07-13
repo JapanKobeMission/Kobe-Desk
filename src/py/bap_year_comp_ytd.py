@@ -116,6 +116,11 @@ for year in cumulative_df.columns:
         poly1d_fn = np.poly1d(coef)
         color2 = light_red if year == previous_year else light_blue if year == current_year else None
         plt.plot(x, poly1d_fn(x), linestyle='--', label=f'{year} Trend', color=color2)
+    # Add label to the last point
+    if len(x) > 0:
+        max_x = x[-1]
+        max_y = y[-1]
+        plt.text(max_x + 0.2, max_y, f'{int(max_y)}', va='center', fontsize=12, color=color1)
         
 plt.title(f'Baptism Count: {previous_year} vs {current_year} YTD')
 plt.xlabel('Week Number')
@@ -140,6 +145,11 @@ for year in cumulative_df.columns:
         poly1d_fn = np.poly1d(coef)
         color2 = light_red if year == previous_year else light_blue if year == current_year else None
         plt.plot(x, poly1d_fn(x), linestyle='--', label=f'{year} 動向', color=color2)
+        # Add label to the last point
+    if len(x) > 0:
+        max_x = x[-1]
+        max_y = y[-1]
+        plt.text(max_x + 0.2, max_y, f'{int(max_y)}', va='center', fontsize=12, color=color1)
         
 plt.title(f'バプテスマを受けた人数の比較: {previous_year}年と{current_year}年 年初来')
 plt.xlabel('週番号')
