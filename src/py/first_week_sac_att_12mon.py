@@ -60,6 +60,23 @@ df_fd_false_missionary = df_fd_false[df_fd_false['Finding Category (copy)'] == '
 df_fd_false_member = df_fd_false[df_fd_false['Finding Category (copy)'] == 'Member']
 df_fd_false_media = df_fd_false[df_fd_false['Finding Category (copy)'] == 'Media']
 
+def print_confirmation_percentage(df, label):
+    total = len(df)
+    if total == 0:
+        percent = 0
+    else:
+        percent = df['Confirmation Date'].notnull().sum() / total * 100
+    print(f"{label}: {percent:.2f}% have a confirmation date ({df['Confirmation Date'].notnull().sum()}/{total})")
+
+# print_confirmation_percentage(df_fd_true, "First Week Sac Att True")
+# print_confirmation_percentage(df_fd_true_missionary, "First Week Sac Att True - Missionary")
+# print_confirmation_percentage(df_fd_true_member, "First Week Sac Att True - Member")
+# print_confirmation_percentage(df_fd_true_media, "First Week Sac Att True - Media")
+# print_confirmation_percentage(df_fd_false, "First Week Sac Att False")
+# print_confirmation_percentage(df_fd_false_missionary, "First Week Sac Att False - Missionary")
+# print_confirmation_percentage(df_fd_false_member, "First Week Sac Att False - Member")
+# print_confirmation_percentage(df_fd_false_media, "First Week Sac Att False - Media")
+
 # Count number of first-time sacrament attendances within a week of first finding event per week (filter to last year)
 df_fd['First Sacrament Date'] = pd.to_datetime(df_fd['First Sacrament Date'], errors='coerce')
 df_fd['First Finding Event Date (truncated)'] = pd.to_datetime(df_fd['First Finding Event Date (truncated)'], errors='coerce')
