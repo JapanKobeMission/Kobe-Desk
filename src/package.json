@@ -19,7 +19,7 @@
     "email": "William Roque <william.roque@missionary.org>",
     "license": "ISC",
     "devDependencies": {
-        "electron": "^17.0.1",
+        "electron": "^38.2.1",
         "electron-builder": "^22.14.13"
     },
     "dependencies": {

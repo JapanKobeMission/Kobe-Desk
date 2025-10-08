@@ -409,7 +409,7 @@ class CreateGraphsView extends View {
             text: 'No output directory selected.'
         });
 
-        const pyDir = 'C:\\Users\\2016702-REF\\VSCode Python Projects\\GitHub Projects\\JapanKobeMission\\Kobe-Desk\\src\\py';
+        const pyDir = path.join(__dirname, '..', 'py');
 
         let outputFilePath = null;
 
