@@ -437,9 +437,10 @@ class CreateGraphsView extends View {
                 }
 
                 // Ensure Python dependencies are installed
-                const requirementsPath = path.join(pyDir, 'requirements.txt');
-                const installProcess = spawn('python', ['-m', 'pip', 'install', '-r', requirementsPath]);
-
+                const reqPathInAsar = path.join(__dirname, '..', 'py', 'requirements.txt');
+                const tmp = path.join(require('os').tmpdir(), 'kobedesk_requirements.txt');
+                const contents = fs.readFileSync(reqPathInAsar, 'utf8'); fs.writeFileSync(tmp, contents);
+                const installProcess = spawn('python', ['-m','pip','install','-r', tmp]);
                 installProcess.stdout.on('data', (data) => {
                     console.log(`pip stdout: ${data}`);
                 });
