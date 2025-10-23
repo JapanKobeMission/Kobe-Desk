@@ -538,3 +538,256 @@ class CreateGraphsView extends View {
     }
 }
 
+// ...existing code...
+class CreateTransferBoardCardsView extends View {
+   get name() { return 'Transfer Board Cards'; }
+
+    build() {
+        const header = new Element('H1', null, {
+            elementClass: 'view-header',
+            text: 'Generate Transfer Board Cards'
+        });
+
+        this.addElement(header);
+
+        const comment = new Element('DIV', null, {
+            elementClass: 'view-comment',
+            text: 'Use this to generate printable cards for Transfer Boards.'
+        });
+
+        this.addElement(comment);
+
+        // Controls: filter recent arrivals (days), select count/copies
+        const controls = new Element('DIV', null, {
+            elementClass: 'view-controls'
+        });
+
+        new Element('LABEL', controls, {
+            elementClass: 'view-label',
+            text: 'Filter by MTC within (days):'
+        });
+
+        const mtcDaysInput = new Element('INPUT', controls, {
+            elementClass: 'view-input-small',
+            attributes: { 'type': 'number', 'value': '120', 'min': '0' }
+        });
+
+        new Element('BUTTON', controls, {
+            elementClass: 'view-button-small',
+            text: 'Apply Filter',
+            eventListener: ['click', () => {
+                const days = parseInt(mtcDaysInput.element.value || '0', 10);
+                filterByMtc(days);
+            }]
+        });
+
+        new Element('LABEL', controls, {
+            elementClass: 'view-label',
+            text: 'Copies per card:'
+        });
+
+        const copiesInput = new Element('INPUT', controls, {
+            elementClass: 'view-input-small',
+            attributes: { 'type': 'number', 'value': '3', 'min': '1' }
+        });
+
+        this.addElement(controls);
+
+        // Selection list
+        const selectionContainer = new Element('DIV', null, {
+            elementClass: 'view-multi-select'
+        });
+
+        // Gather people + profiles safely (fallbacks)
+        const peopleMap = this.database.people || {};
+        const profiles = (typeof this.database.getProfiles === 'function') ? this.database.getProfiles() : (this.database.profiles || {});
+
+        const personEntries = [];
+
+        // Build list UI
+        for (const name of Object.keys(peopleMap)) {
+            const person = peopleMap[name] || {};
+
+            const entry = new Element('DIV', selectionContainer, {
+                elementClass: 'view-select-entry'
+            });
+
+            const cb = new Element('INPUT', entry, {
+                elementClass: 'view-select-checkbox',
+                attributes: { 'type': 'checkbox', 'value': name }
+            });
+
+            const thumb = new Element('IMG', entry, {
+                elementClass: 'view-select-thumb',
+                attributes: {
+                    'SRC': profiles[name] || '',
+                    'alt': name
+                }
+            });
+
+            const labelWrap = new Element('DIV', entry, {
+                elementClass: 'view-select-labels'
+            });
+
+            new Element('DIV', labelWrap, {
+                elementClass: 'view-select-name',
+                text: name
+            });
+
+            // Try a few common keys for MTC/hometown
+            const mtc = person.mtcStart || person.mtc_start || person.mtc || person.arrivalDate || '';
+            const hometown = person.hometown || person.city || person.home || '';
+
+            new Element('DIV', labelWrap, {
+                elementClass: 'view-select-sub',
+                text: `MTC: ${mtc || 'N/A'}  •  Hometown: ${hometown || 'N/A'}`
+            });
+
+            personEntries.push({
+                name,
+                person,
+                entryElement: entry,
+                checkbox: cb,
+                mtc,
+                hometown,
+                photo: profiles[name] || ''
+            });
+        }
+
+        this.addElement(selectionContainer);
+
+        // Helper to parse date (very forgiving)
+        function parseDateSafe(s) {
+            if (!s) return null;
+            // try ISO or YYYY/MM/DD or MM/DD/YYYY
+            const d = new Date(s);
+            if (!isNaN(d.getTime())) return d;
+            // try replace - with /
+            const d2 = new Date(s.replace(/-/g, '/'));
+            if (!isNaN(d2.getTime())) return d2;
+            return null;
+        }
+
+        function filterByMtc(days) {
+            const now = new Date();
+            for (const e of personEntries) {
+                if (!e.mtc) {
+                    e.entryElement.element.style.display = '';
+                    continue;
+                }
+                const dt = parseDateSafe(e.mtc);
+                if (!dt) {
+                    e.entryElement.element.style.display = '';
+                    continue;
+                }
+                const diffDays = Math.floor((now - dt) / (1000 * 60 * 60 * 24));
+                e.entryElement.element.style.display = (diffDays <= days) ? '' : 'none';
+            }
+        }
+
+        // Buttons: Preview and Generate
+        const actions = new Element('DIV', null, {
+            elementClass: 'view-actions'
+        });
+
+        new Element('BUTTON', actions, {
+            elementClass: 'view-button',
+            text: 'Preview',
+            eventListener: ['click', () => {
+                const selected = personEntries.filter(p => p.checkbox.element.checked && p.entryElement.element.style.display !== 'none');
+                if (!selected.length) {
+                    showMessage('No missionaries selected for preview.');
+                    return;
+                }
+
+                const cards = selected.map(p => ({
+                    name: p.name,
+                    mtc: p.mtc || '',
+                    hometown: p.hometown || '',
+                    photo: p.photo || ''
+                }));
+
+                const payload = {
+                    cards,
+                    copies: parseInt(copiesInput.element.value || '3', 10),
+                    cardSizeInches: { width: 3, height: 5 }, // per your spec
+                    paperSize: 'A4',
+                    preview: true
+                };
+
+                // Open generate window visible
+                ipcRenderer.sendSync('create-window', 'generate', {
+                    show: true,
+                    webPreferences: {
+                        nodeIntegration: true,
+                        enableRemoteModule: true,
+                        contextIsolation: false
+                    },
+                    titleBarStyle: 'hidden',
+                    titleBarOverlay: { color: '#292929', symbolColor: '#fff' },
+                    minWidth: 600,
+                    minHeight: 450,
+                    backgroundColor: '#fff'
+                });
+
+                // Send data to main/process or generate window handler
+                ipcRenderer.send('transfer-board-cards-data', payload);
+            }]
+        });
+
+        new Element('BUTTON', actions, {
+            elementClass: 'view-button',
+            text: 'Generate PDF',
+            eventListener: ['click', () => {
+                const selected = personEntries.filter(p => p.checkbox.element.checked && p.entryElement.element.style.display !== 'none');
+                if (!selected.length) {
+                    showMessage('No missionaries selected for generation.');
+                    return;
+                }
+
+                const savePath = dialog.showSaveDialogSync({
+                    filters: [{ name: 'PDF', extensions: ['pdf'] }],
+                    defaultPath: path.join(require('os').homedir(), 'transfer_board_cards.pdf')
+                });
+
+                if (!savePath) return;
+
+                const cards = selected.map(p => ({
+                    name: p.name,
+                    mtc: p.mtc || '',
+                    hometown: p.hometown || '',
+                    photo: p.photo || ''
+                }));
+
+                const payload = {
+                    cards,
+                    copies: parseInt(copiesInput.element.value || '3', 10),
+                    cardSizeInches: { width: 3, height: 5 },
+                    paperSize: 'A4',
+                    preview: false,
+                    savePath
+                };
+
+                // Prefer creating a hidden generate window to render and save PDF
+                ipcRenderer.sendSync('create-window', 'generate', {
+                    show: false,
+                    webPreferences: {
+                        nodeIntegration: true,
+                        enableRemoteModule: true,
+                        contextIsolation: false
+                    },
+                    titleBarStyle: 'hidden',
+                    titleBarOverlay: { color: '#292929', symbolColor: '#fff' },
+                    minWidth: 600,
+                    minHeight: 450,
+                    backgroundColor: '#fff'
+                });
+
+                ipcRenderer.send('transfer-board-cards-data', payload);
+            }]
+        });
+
+        this.addElement(actions);
+    }
+}
+// ...existing code...
