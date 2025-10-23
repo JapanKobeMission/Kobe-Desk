@@ -5,6 +5,7 @@ from matplotlib import rcParams
 from datetime import datetime, timedelta
 import os
 import sys
+import numpy as np
 
 # pandas options
 pd.set_option("display.max_columns", None)  # Show up to 50 columns
@@ -113,6 +114,17 @@ comparison_df = comparison_df[
 # Prepare for plotting
 comparison_df['Date'] = comparison_df['Previous Sunday Date'].combine_first(comparison_df['Sunday Date'])
 
+# For Member Referrals
+x = np.arange(len(comparison_df['Date']))
+y1 = comparison_df['Member Referrals'].fillna(0)
+z1 = np.polyfit(x, y1, 2)
+p1 = np.poly1d(z1)
+
+# For Sacrament Attendance
+y2 = comparison_df['SA Actual'].fillna(0)
+z2 = np.polyfit(x, y2, 2)
+p2 = np.poly1d(z2)
+
 # Double y-axis plot
 fig, ax1 = plt.subplots(figsize=(16, 9))
 
@@ -121,21 +133,23 @@ ax1.set_xlabel('Week')
 ax1.set_ylabel('Finds Through Members', color=color1)
 ax1.plot(comparison_df['Date'], comparison_df['Member Referrals'], marker='o', color=color1, label='Member Referrals')
 ax1.tick_params(axis='y', labelcolor=color1)
+ax1.plot(comparison_df['Date'], p1(x), color=color1, linestyle='--', linewidth=3, label='Member Referrals Trend')
 
 ax2 = ax1.twinx()
 color2 = 'tab:orange'
 ax2.set_ylabel('Sacrament Attendance', color=color2)
 ax2.plot(comparison_df['Date'], comparison_df['SA Actual'], marker='s', color=color2, label='SA Actual')
 ax2.tick_params(axis='y', labelcolor=color2)
+ax2.plot(comparison_df['Date'], p2(x), color=color2, linestyle='--', linewidth=3, label='SA Actual Trend')
 
 plt.title('Weekly Comparison: Finds Through Members vs. Sacrament Attendance', fontsize=16, fontweight='bold')
+
 fig.tight_layout()
 
 # Save the plot
 output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
 os.makedirs(output_dir, exist_ok=True)
 plt.savefig(os.path.join(output_dir, 'sac_att_vs_member_ref_ytd_en.png'), dpi=100)
-plt.show()
 plt.close()
 
 # Japanese version of the plot
@@ -146,12 +160,14 @@ ax1.set_xlabel('週')
 ax1.set_ylabel('会員からのリフェロー', color=color1)
 ax1.plot(comparison_df['Date'], comparison_df['Member Referrals'], marker='o', color=color1, label='Member Referrals')
 ax1.tick_params(axis='y', labelcolor=color1)
+ax1.plot(comparison_df['Date'], p1(x), color=color1, linestyle='--', linewidth=3, label='Member Referrals Trend')
 
 ax2 = ax1.twinx()
 color2 = 'tab:orange'
 ax2.set_ylabel('聖餐会の出席人数', color=color2)
 ax2.plot(comparison_df['Date'], comparison_df['SA Actual'], marker='s', color=color2, label='SA Actual')
 ax2.tick_params(axis='y', labelcolor=color2)
+ax2.plot(comparison_df['Date'], p2(x), color=color2, linestyle='--', linewidth=3, label='SA Actual Trend')
 
 plt.title('週ごとの比較：会員からのリフェローと聖餐会の出席人数', fontsize=16, fontweight='bold')
 fig.tight_layout()
@@ -160,5 +176,4 @@ fig.tight_layout()
 output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
 os.makedirs(output_dir, exist_ok=True)
 plt.savefig(os.path.join(output_dir, 'sac_att_vs_member_ref_ytd_jp.png'), dpi=100)
-plt.show()
 plt.close()
