@@ -117,24 +117,18 @@ all_weeks = attendance_within_week.index.union(confirmations_per_week.index)
 attendance_within_week = attendance_within_week.reindex(all_weeks, fill_value=0)
 confirmations_per_week = confirmations_per_week.reindex(all_weeks, fill_value=0)
 
-# Dual y-axis plot
-fig, ax1 = plt.subplots(figsize=(16, 9))
+# Single y-axis plot (First-Time Sacrament Attendance Only)
+fig, ax = plt.subplots(figsize=(16, 9))
 
 color1 = blue
-color2 = red
 
-ax1.bar(attendance_within_week.index.astype(str), attendance_within_week.values, color=color1, label='First-Time Sacrament Attendance (Within 1 Week)')
-ax1.set_xlabel('Week')
-ax1.set_ylabel('First Week Attendees', color=color1)
-ax1.tick_params(axis='y', labelcolor=color1)
+ax.bar(attendance_within_week.index.astype(str), attendance_within_week.values, color=color1, label='First-Time Sacrament Attendance (Within 1 Week)')
+ax.set_xlabel('Week')
+ax.set_ylabel('First Week Attendees', color=color1)
+ax.tick_params(axis='y', labelcolor=color1)
 plt.xticks(rotation=90)
 
-ax2 = ax1.twinx()
-ax2.plot(confirmations_per_week.index.astype(str), confirmations_per_week.values, color=color2, marker='o', label='Confirmations per Week')
-ax2.set_ylabel('Baptisms', color=color2)
-ax2.tick_params(axis='y', labelcolor=color2)
-
-plt.title('First Sacrament Attendance Within a Week of Being Found vs. Baptisms per Week', fontsize=16, fontweight='bold')
+plt.title('First Sacrament Attendance Within a Week of Being Found (Last 12 Months)', fontsize=16, fontweight='bold')
 fig.tight_layout()
 # Save the plot
 output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
@@ -144,21 +138,16 @@ plt.close()
 
 # Japanese version of the plot
 rcParams['font.family'] = 'Yu Gothic'
-fig, ax1 = plt.subplots(figsize=(16, 9))
+# Single y-axis plot (First-Time Sacrament Attendance Only)
+fig, ax = plt.subplots(figsize=(16, 9))
 
 color1 = blue
-color2 = red
 
-ax1.bar(attendance_within_week.index.astype(str), attendance_within_week.values, color=color1, label='First-Time Sacrament Attendance (Within 1 Week)')
-ax1.set_xlabel('週')
-ax1.set_ylabel('初めての聖餐会出席人数', color=color1)
-ax1.tick_params(axis='y', labelcolor=color1)
+ax.bar(attendance_within_week.index.astype(str), attendance_within_week.values, color=color1, label='First-Time Sacrament Attendance (Within 1 Week)')
+ax.set_xlabel('週')
+ax.set_ylabel('初めての聖餐会出席人数', color=color1)
+ax.tick_params(axis='y', labelcolor=color1)
 plt.xticks(rotation=90)
-
-ax2 = ax1.twinx()
-ax2.plot(confirmations_per_week.index.astype(str), confirmations_per_week.values, color=color2, marker='o', label='Confirmations per Week')
-ax2.set_ylabel('バプテスマ人数', color=color2)
-ax2.tick_params(axis='y', labelcolor=color2)
 
 plt.title('見つけられてから1週間以内の初めての聖餐会出席人数とバプテスマ人数の比較', fontsize=16, fontweight='bold')
 fig.tight_layout()
