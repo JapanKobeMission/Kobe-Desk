@@ -308,7 +308,7 @@ class CreateGraphsView extends View {
 
         const comment = new Element('DIV', null, {
             elementClass: 'view-comment',
-            text: 'Use this to generate various graphs to be used in MLC, DLC, and for looking at various metrics.<br><br>In order to download these files:<br>1. Access Tableau at this link: https://missionaryreports.churchofjesuschrist.org/#/site/Missionary/home. If you do not have access, make sure to talk to President Sano!<br>2. Choose the view you want to download data from (Key Indicator Performance or Mission Finding Comparison)<br><br>For Key Indicator Performance:<br>1. Select "Japan Kobe" in the "Mission Name" dropdown<br>2. Ensure the date range is from 1/1/2024 (it will probably default to 1/1/2025) to the current date, or later <br>3. Click the download button in the top right corner and choose the "Crosstab" option<br>4. Ensure the "Missionary KI Table" is the sheet selected, then choose either format of file<br>5. Press Download<br><br>For Mission Finding Comparison:<br>1. Change "Start Date" to 1/1/2001 (some people baptized were found many years ago)<br>2. Ensure "End Date" is the current date, or later<br>3. Click the download button in the top right corner and choose the "Crosstab" option<br>4. Ensure the "Detail" is the sheet selected, then choose either format of file<br>5. Press Download<br><br>You will have to upload these files each time you want to generate new graphs. They will not save. This is to make sure you are using the most up-to-date data from Tableau.'
+            text: 'Use this to generate various graphs to be used in MLC, DLC, and for looking at various metrics.<br><br>In order to download these files:<br>1. Access Tableau at this link:<br>https://prod-useast-b.online.tableau.com/t/churchofjesuschrist/views/. If you do not have access, make sure to talk to President Sano!<br>2. Choose the view you want to download data from (Key Indicator Performance or Mission Finding Comparison)<br><br>For Key Indicator Performance:<br>1. Select "Japan Kobe" in the "Mission Name" dropdown<br>2. Ensure the date range is from 1/1/2024 (it will probably default to 1/1/2025) to the current date, or later <br>3. Click the download button in the top right corner and choose the "Crosstab" option<br>4. Ensure the "Missionary KI Table" is the sheet selected, then choose either format of file<br>5. Press Download<br><br>For Mission Finding Comparison:<br>1. Change "Start Date" to 1/1/2001 (some people baptized were found many years ago)<br>2. Ensure "End Date" is the current date, or later<br>3. Click the download button in the top right corner and choose the "Crosstab" option<br>4. Ensure the "Detail" is the sheet selected, then choose either format of file<br>5. Press Download<br><br>You will have to upload these files each time you want to generate new graphs. They will not save. This is to make sure you are using the most up-to-date data from Tableau.'
         });
 
         this.addElement(comment);
@@ -409,7 +409,7 @@ class CreateGraphsView extends View {
             text: 'No output directory selected.'
         });
 
-        const pyDir = 'C:\\Users\\2016702-REF\\VSCode Python Projects\\GitHub Projects\\JapanKobeMission\\Kobe-Desk\\src\\py';
+        const pyDir = path.join(__dirname, '..', 'py');
 
         let outputFilePath = null;
 
@@ -538,3 +538,256 @@ class CreateGraphsView extends View {
     }
 }
 
+// ...existing code...
+class CreateTransferBoardCardsView extends View {
+   get name() { return 'Transfer Board Cards'; }
+
+    build() {
+        const header = new Element('H1', null, {
+            elementClass: 'view-header',
+            text: 'Generate Transfer Board Cards'
+        });
+
+        this.addElement(header);
+
+        const comment = new Element('DIV', null, {
+            elementClass: 'view-comment',
+            text: 'Use this to generate printable cards for Transfer Boards.'
+        });
+
+        this.addElement(comment);
+
+        // Controls: filter recent arrivals (days), select count/copies
+        const controls = new Element('DIV', null, {
+            elementClass: 'view-controls'
+        });
+
+        new Element('LABEL', controls, {
+            elementClass: 'view-label',
+            text: 'Filter by MTC within (days):'
+        });
+
+        const mtcDaysInput = new Element('INPUT', controls, {
+            elementClass: 'view-input-small',
+            attributes: { 'type': 'number', 'value': '120', 'min': '0' }
+        });
+
+        new Element('BUTTON', controls, {
+            elementClass: 'view-button-small',
+            text: 'Apply Filter',
+            eventListener: ['click', () => {
+                const days = parseInt(mtcDaysInput.element.value || '0', 10);
+                filterByMtc(days);
+            }]
+        });
+
+        new Element('LABEL', controls, {
+            elementClass: 'view-label',
+            text: 'Copies per card:'
+        });
+
+        const copiesInput = new Element('INPUT', controls, {
+            elementClass: 'view-input-small',
+            attributes: { 'type': 'number', 'value': '3', 'min': '1' }
+        });
+
+        this.addElement(controls);
+
+        // Selection list
+        const selectionContainer = new Element('DIV', null, {
+            elementClass: 'view-multi-select'
+        });
+
+        // Gather people + profiles safely (fallbacks)
+        const peopleMap = this.database.people || {};
+        const profiles = (typeof this.database.getProfiles === 'function') ? this.database.getProfiles() : (this.database.profiles || {});
+
+        const personEntries = [];
+
+        // Build list UI
+        for (const name of Object.keys(peopleMap)) {
+            const person = peopleMap[name] || {};
+
+            const entry = new Element('DIV', selectionContainer, {
+                elementClass: 'view-select-entry'
+            });
+
+            const cb = new Element('INPUT', entry, {
+                elementClass: 'view-select-checkbox',
+                attributes: { 'type': 'checkbox', 'value': name }
+            });
+
+            const thumb = new Element('IMG', entry, {
+                elementClass: 'view-select-thumb',
+                attributes: {
+                    'SRC': profiles[name] || '',
+                    'alt': name
+                }
+            });
+
+            const labelWrap = new Element('DIV', entry, {
+                elementClass: 'view-select-labels'
+            });
+
+            new Element('DIV', labelWrap, {
+                elementClass: 'view-select-name',
+                text: name
+            });
+
+            // Try a few common keys for MTC/hometown
+            const mtc = person.mtcStart || person.mtc_start || person.mtc || person.arrivalDate || '';
+            const hometown = person.hometown || person.city || person.home || '';
+
+            new Element('DIV', labelWrap, {
+                elementClass: 'view-select-sub',
+                text: `MTC: ${mtc || 'N/A'}  •  Hometown: ${hometown || 'N/A'}`
+            });
+
+            personEntries.push({
+                name,
+                person,
+                entryElement: entry,
+                checkbox: cb,
+                mtc,
+                hometown,
+                photo: profiles[name] || ''
+            });
+        }
+
+        this.addElement(selectionContainer);
+
+        // Helper to parse date (very forgiving)
+        function parseDateSafe(s) {
+            if (!s) return null;
+            // try ISO or YYYY/MM/DD or MM/DD/YYYY
+            const d = new Date(s);
+            if (!isNaN(d.getTime())) return d;
+            // try replace - with /
+            const d2 = new Date(s.replace(/-/g, '/'));
+            if (!isNaN(d2.getTime())) return d2;
+            return null;
+        }
+
+        function filterByMtc(days) {
+            const now = new Date();
+            for (const e of personEntries) {
+                if (!e.mtc) {
+                    e.entryElement.element.style.display = '';
+                    continue;
+                }
+                const dt = parseDateSafe(e.mtc);
+                if (!dt) {
+                    e.entryElement.element.style.display = '';
+                    continue;
+                }
+                const diffDays = Math.floor((now - dt) / (1000 * 60 * 60 * 24));
+                e.entryElement.element.style.display = (diffDays <= days) ? '' : 'none';
+            }
+        }
+
+        // Buttons: Preview and Generate
+        const actions = new Element('DIV', null, {
+            elementClass: 'view-actions'
+        });
+
+        new Element('BUTTON', actions, {
+            elementClass: 'view-button',
+            text: 'Preview',
+            eventListener: ['click', () => {
+                const selected = personEntries.filter(p => p.checkbox.element.checked && p.entryElement.element.style.display !== 'none');
+                if (!selected.length) {
+                    showMessage('No missionaries selected for preview.');
+                    return;
+                }
+
+                const cards = selected.map(p => ({
+                    name: p.name,
+                    mtc: p.mtc || '',
+                    hometown: p.hometown || '',
+                    photo: p.photo || ''
+                }));
+
+                const payload = {
+                    cards,
+                    copies: parseInt(copiesInput.element.value || '3', 10),
+                    cardSizeInches: { width: 3, height: 5 }, // per your spec
+                    paperSize: 'A4',
+                    preview: true
+                };
+
+                // Open generate window visible
+                ipcRenderer.sendSync('create-window', 'generate', {
+                    show: true,
+                    webPreferences: {
+                        nodeIntegration: true,
+                        enableRemoteModule: true,
+                        contextIsolation: false
+                    },
+                    titleBarStyle: 'hidden',
+                    titleBarOverlay: { color: '#292929', symbolColor: '#fff' },
+                    minWidth: 600,
+                    minHeight: 450,
+                    backgroundColor: '#fff'
+                });
+
+                // Send data to main/process or generate window handler
+                ipcRenderer.send('transfer-board-cards-data', payload);
+            }]
+        });
+
+        new Element('BUTTON', actions, {
+            elementClass: 'view-button',
+            text: 'Generate PDF',
+            eventListener: ['click', () => {
+                const selected = personEntries.filter(p => p.checkbox.element.checked && p.entryElement.element.style.display !== 'none');
+                if (!selected.length) {
+                    showMessage('No missionaries selected for generation.');
+                    return;
+                }
+
+                const savePath = dialog.showSaveDialogSync({
+                    filters: [{ name: 'PDF', extensions: ['pdf'] }],
+                    defaultPath: path.join(require('os').homedir(), 'transfer_board_cards.pdf')
+                });
+
+                if (!savePath) return;
+
+                const cards = selected.map(p => ({
+                    name: p.name,
+                    mtc: p.mtc || '',
+                    hometown: p.hometown || '',
+                    photo: p.photo || ''
+                }));
+
+                const payload = {
+                    cards,
+                    copies: parseInt(copiesInput.element.value || '3', 10),
+                    cardSizeInches: { width: 3, height: 5 },
+                    paperSize: 'A4',
+                    preview: false,
+                    savePath
+                };
+
+                // Prefer creating a hidden generate window to render and save PDF
+                ipcRenderer.sendSync('create-window', 'generate', {
+                    show: false,
+                    webPreferences: {
+                        nodeIntegration: true,
+                        enableRemoteModule: true,
+                        contextIsolation: false
+                    },
+                    titleBarStyle: 'hidden',
+                    titleBarOverlay: { color: '#292929', symbolColor: '#fff' },
+                    minWidth: 600,
+                    minHeight: 450,
+                    backgroundColor: '#fff'
+                });
+
+                ipcRenderer.send('transfer-board-cards-data', payload);
+            }]
+        });
+
+        this.addElement(actions);
+    }
+}
+// ...existing code...
