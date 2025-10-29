@@ -12,7 +12,8 @@ const viewCategories = {
     'Create': [
         new CreateTransferDocsView(database),
         new CreateContactsView(database),
-        new CreateGraphsView(database)
+        new CreateGraphsView(database),
+        new CreateTransferBoardCardsView(database)
     ],
     'Edit': [
         new EditPeopleView(database),

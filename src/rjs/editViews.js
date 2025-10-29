@@ -55,25 +55,30 @@ class EditPeopleView extends PaginatedView {
 
         query = query ? query.toLowerCase() : '';
 
+        function safeLower(v) {
+            if (v === undefined || v === null) return '';
+            return String(v).toLowerCase();
+        }
+
         const people = Object.values(this.database.people).filter(person => {
             const area = this.database.getPersonArea(person.name);
 
             if (area) {
-                return person.name.toLowerCase().includes(query)
-                    || person.ID.toLowerCase().includes(query)
-                    || person.type.toLowerCase().includes(query)
-                    || person.assignment.toLowerCase().includes(query)
-                    || person.status.toLowerCase().includes(query)
-                    || area.name.toLowerCase().includes(query)
-                    || area.district.toLowerCase().includes(query)
-                    || area.zone.toLowerCase().includes(query);
+                return safeLower(person.name).includes(query)
+                    || safeLower(person.ID).includes(query)
+                    || safeLower(person.type).includes(query)
+                    || safeLower(person.assignment).includes(query)
+                    || safeLower(person.status).includes(query)
+                    || safeLower(area.name).includes(query)
+                    || safeLower(area.district).includes(query)
+                    || safeLower(area.zone).includes(query);
             }
 
-            return person.name.toLowerCase().includes(query)
-                || person.ID.toLowerCase().includes(query)
-                || person.type.toLowerCase().includes(query)
-                || person.assignment.toLowerCase().includes(query)
-                || person.status.toLowerCase().includes(query);
+            return safeLower(person.name).includes(query)
+                || safeLower(person.ID).includes(query)
+                || safeLower(person.type).includes(query)
+                || safeLower(person.assignment).includes(query)
+                || safeLower(person.status).includes(query);
         });
 
         this.count = people.length;

@@ -16,7 +16,7 @@ class ImportRosterView extends View {
 
         const comment = new Element('DIV', null, {
             elementClass: 'view-comment',
-            text: 'From here, you can import the Missionary Portal roster spreadsheet (.xlsx). In no particular order, you should include the fields for =Missionary=, =ID=, =Type=, =Position Abbr=, =Phone=, =Assignment=, =Status=, =Arrival Date=, =Release Date=, =Area=, =District=, and =Zone=.'
+            text: 'From here, you can import the Missionary Portal roster spreadsheet (.xlsx). In no particular order, you should include the fields for =Missionary=, =ID=, =Type=, =Position Abbr=, =Phone=, =Assignment=, =Status=, =Arrival Date=, =Release Date=, =Area=, =District=, and =Zone=.<br>Make sure you create a custom view of the roster in Missionary Portal to ensure you export each column necessary!<br>In order to do that:<br><ol><li></li>'
         });
 
         this.addElement(comment);
