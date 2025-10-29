@@ -409,7 +409,14 @@ class CreateGraphsView extends View {
             text: 'No output directory selected.'
         });
 
-        const pyDir = path.join(__dirname, '..', 'py');
+        const srcDirCandidate1 = "C:\\Users\\2016702-REF\\VSCode Python Projects\\GitHub Projects\\JapanKobeMission\\Kobe-Desk\\src";
+        const srcDirCandidate2 = "C:\\Users\\2016702-MTS\\VSCode Python Projects\\GitHub Projects\\Kobe-Desk\\src"
+
+        const srcDir = fs.existsSync(srcDirCandidate1)
+            ? srcDirCandidate1
+            : (fs.existsSync(srcDirCandidate2) ? srcDirCandidate2 : path.join(__dirname, '..'));
+
+        const pyDir = path.join(srcDir, 'py');
 
         let outputFilePath = null;
 
