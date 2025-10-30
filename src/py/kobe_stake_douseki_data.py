@@ -23,14 +23,14 @@ blue = '#0011ff'
 light_blue = '#0576ff'
 
 # sys.argv is the array of arguments passed to the script from the js
-key_indicator_path = sys.argv[1]
-finding_detail_path = sys.argv[2]
-output_path = sys.argv[3]
+# key_indicator_path = sys.argv[1]
+# finding_detail_path = sys.argv[2]
+# output_path = sys.argv[3]
 
 # temp paths for local testing
-# key_indicator_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Missionary KI Table (3).xlsx"
-# finding_detail_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Detail (12).xlsx"
-# output_path = r"C:\Users\2016702-REF\OneDrive - Church of Jesus Christ\Desktop\Kobe Desk\Output Graphs"
+key_indicator_path = r"C:\Users\2016702-MTS\Desktop\kobe desk\Missionary KI Table.xlsx"
+finding_detail_path = r"C:\Users\2016702-MTS\Desktop\kobe desk\Detail (5).xlsx"
+output_path = r"C:\Users\2016702-MTS\Desktop\kobe desk\Output Graphs"
 
 def read_data(file_path):
     ext = os.path.splitext(file_path)[1].lower()
@@ -43,15 +43,20 @@ def read_data(file_path):
 
 df_ki = read_data(key_indicator_path)
 
+# put first row of df_ki into a list (empty list if df is empty)
+if not df_ki.empty:
+    first_row_list = df_ki.iloc[0].tolist()
+else:
+    first_row_list = []
+
 df_ki = df_ki.rename(columns={
-    'Unnamed: 0': 'Week Index',
-    'Unnamed: 1': 'Weekly Sunday Date',
-    'Unnamed: 2': 'Area ID',
-    'Unnamed: 3': 'Sunday Date',
-    'Unnamed: 4': 'Zone',
-    'Unnamed: 5': 'District',
-    'Unnamed: 6': 'Area',
-    'Unnamed: 7': 'Missionaries',
+    'Unnamed: 0': 'Weekly Sunday Date',
+    'Unnamed: 1': 'Area ID and Sunday Date',
+    'Unnamed: 2': 'Sunday Date',
+    'Unnamed: 3': 'Zone',
+    'Unnamed: 4': 'District',
+    'Unnamed: 5': 'Area',
+    'Unnamed: 6': 'Missionaries',
     'New People Goal': 'NPG',
     'New People Actual': 'NP',
     'Lessons with Member Participating Goal': 'MLG', 
@@ -66,30 +71,39 @@ df_ki = df_ki.rename(columns={
     'New Members at Sacrament Actual': 'NMSA',
 })
 # drop unnecessary columns
-df_ki = df_ki.drop(columns=['Week Index',
-                            'Weekly Sunday Date',
+df_ki = df_ki.drop(columns=['Weekly Sunday Date',
+                            'Sunday Date 2',
                             'Area ID',
                             'Missionaries'
                             ], errors='ignore')
 
-print(f'Columns in Key Indicator DataFrame: {df_ki.columns.tolist()}')
+#  print(f'Columns in Key Indicator DataFrame: {df_ki.columns.tolist()}')
 
 # Filter for Kobe zone and Toyooka area
 kobe_df = df_ki[(df_ki['Zone'] == 'Kobe') | (df_ki['Area'] == 'Toyooka')]
+drop_list = [
+    'Office Couple 1',
+    'Office Couple 2',
+    'Office Secretary'
+]
+kobe_df = kobe_df[~kobe_df['Area'].isin(drop_list)]
 
 # Convert 'Sunday Date' to datetime if not already
 kobe_df['Sunday Date'] = pd.to_datetime(kobe_df['Sunday Date'], errors='coerce')
 
 # Filter for dates between start of the year and today
-start_date = pd.to_datetime(f"{pd.Timestamp.now().year}-01-01")
-end_date = pd.to_datetime('today').normalize()
+start_date = pd.to_datetime(f"{pd.Timestamp.now().year}/1/1")
+end_date = pd.to_datetime(datetime.now().strftime('%Y/%m/%d'))
 kobe_df = kobe_df[(kobe_df['Sunday Date'] >= start_date) & (kobe_df['Sunday Date'] <= end_date)]
 
 ml_totals = kobe_df.groupby('Area')['ML'].sum()
-print(f"Total Dousekis in Kobe Stake from {start_date} to {end_date}: ")
+print(f"Total Dousekis in Kobe Stake from {start_date.strftime('%Y/%m/%d')} to {end_date.strftime('%Y/%m/%d')}: ")
 print(ml_totals)
 
-txt_path = os.path.join(output_path, 'kobe_stake_douseki_totals.txt')
+output_dir = os.path.join(output_path, datetime.now().strftime('%Y-%m-%d'))
+os.makedirs(output_dir, exist_ok=True)
+
+txt_path = os.path.join(output_dir, 'kobe_stake_douseki_totals.txt')
 with open(txt_path, 'w', encoding='utf-8') as f:
     f.write(f"Total Dousekis in Kobe Stake from {start_date.date()} to {end_date.date()}:\n")
     for area, total in ml_totals.items():
