@@ -23,14 +23,14 @@ blue = '#0011ff'
 light_blue = '#0576ff'
 
 # sys.argv is the array of arguments passed to the script from the js
-# key_indicator_path = sys.argv[1]
-# finding_detail_path = sys.argv[2]
-# output_path = sys.argv[3]
+key_indicator_path = sys.argv[1]
+finding_detail_path = sys.argv[2]
+output_path = sys.argv[3]
 
 # temp paths for local testing
-key_indicator_path = r"C:\Users\2016702-MTS\Desktop\kobe desk\Missionary KI Table.xlsx"
-finding_detail_path = r"C:\Users\2016702-MTS\Desktop\kobe desk\Detail (5).xlsx"
-output_path = r"C:\Users\2016702-MTS\Desktop\kobe desk\Output Graphs"
+# key_indicator_path = r"C:\Users\2016702-MTS\Desktop\kobe desk\Missionary KI Table.xlsx"
+# finding_detail_path = r"C:\Users\2016702-MTS\Desktop\kobe desk\Detail (5).xlsx"
+# output_path = r"C:\Users\2016702-MTS\Desktop\kobe desk\Output Graphs"
 
 def read_data(file_path):
     ext = os.path.splitext(file_path)[1].lower()
