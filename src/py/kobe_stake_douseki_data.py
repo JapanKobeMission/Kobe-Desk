@@ -87,14 +87,16 @@ drop_list = [
     'Office Secretary'
 ]
 kobe_df = kobe_df[~kobe_df['Area'].isin(drop_list)]
+print(kobe_df[kobe_df['Area'] == 'Office Elders 1'])
 
 # Convert 'Sunday Date' to datetime if not already
-kobe_df['Sunday Date'] = pd.to_datetime(kobe_df['Sunday Date'], errors='coerce')
+kobe_df['Sunday Date'] = pd.to_datetime(kobe_df['Sunday Date'], format='%d/%m/%Y', errors='coerce')
 
 # Filter for dates between start of the year and today
 start_date = pd.to_datetime(f"{pd.Timestamp.now().year}/1/1")
 end_date = pd.to_datetime(datetime.now().strftime('%Y/%m/%d'))
 kobe_df = kobe_df[(kobe_df['Sunday Date'] >= start_date) & (kobe_df['Sunday Date'] <= end_date)]
+print(kobe_df[kobe_df['Area'] == 'Office Elders 1'])
 
 ml_totals = kobe_df.groupby('Area')['ML'].sum()
 print(f"Total Dousekis in Kobe Stake from {start_date.strftime('%Y/%m/%d')} to {end_date.strftime('%Y/%m/%d')}: ")
